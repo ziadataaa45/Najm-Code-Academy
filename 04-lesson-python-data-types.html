@@ -91,6 +91,8 @@ footer img{display:block;width:100%;height:auto}
 .row.wide{flex-direction:column;align-items:stretch}
 .row.wide .code{width:100%;font-size:20px;overflow-x:auto}
 .qcode{direction:ltr;text-align:left;background:var(--dark);color:#eaf0ff;font-family:'Fira Code',monospace;font-size:15px;border-radius:10px;padding:10px 14px;margin:0 0 10px;overflow-x:auto}
+.qbar .qhome{background:none;color:var(--purple);border:2px solid var(--purple);box-shadow:none;padding:8px 28px;margin-inline-start:10px}
+.qbar .qhome:hover{background:color-mix(in srgb,var(--purple) 12%,var(--card))}
 </style>
 </head>
 <body>
@@ -208,7 +210,7 @@ const LESSON = {
 
     /* 6) اختبار نهاية الدرس */
     { type: "quiz", title: "اختبر نفسك",
-      intro: "جاوب على الأسئلة التالية ثم اضغط «تحقق من الإجابات». لا تستطيع إنهاء الدرس إلا بعد الإجابة الصحيحة على كل الأسئلة.",
+      intro: "جاوب على الأسئلة التالية ثم اضغط «تحقق من الإجابات» لتعرف نتيجتك. ويمكنك العودة للصفحة الرئيسية في أي وقت.",
       home: "index.html",
       questions: [
         { q: "ماذا يعني أن Python لغة ذات كتابة ديناميكية (Dynamically Typed)؟",
@@ -235,6 +237,7 @@ const LESSON = {
 /* ================== نهاية منطقة التعديل ================== */
 
 const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const ar=t=>/[\u0600-\u06FF]/.test(t);
 const hl=s=>esc(s).replace(/(&quot;|"[^"]*"|'[^']*')/g,m=>m==='&quot;'?m:`<span class="st">${m}</span>`)
   .replace(/(^|[\s=(])(-?\d+(\.\d+)?)(?![^<]*>)/g,'$1<span class="num">$2</span>').replace(/ = /,' <span class="eq">=</span> ');
 const COLORS={green:'--green',sky:'--sky',pink:'--pink',orange:'--orange',violet:'--violet'};
@@ -262,9 +265,9 @@ $('sections').innerHTML=L.sections.map((s,i)=>{
       <div class="chips">${c.examples.map(e=>`<span>${esc(e)}</span>`).join('')}</div><p>${esc(c.desc)}</p>
       ${c.badge==='check'?'<div class="badge mk"><span class="ck">✓</span><span class="xx">✕</span></div>':`<div class="badge">${esc(c.badge)}</div>`}</div>`).join('')+
     `</div><div class="demo">▶ اضغط على أي بطاقة لترى مثالًا</div>`;
-  if(s.type==='quiz') body=`<p class="sub">${esc(s.intro||'')}</p>`+s.questions.map((q,n)=>`<div class="qz" id="q${i}-${n}" data-a="${q.answer}"><div class="qt" dir="auto"><span class="qn">${n+1}</span><span>${esc(q.q)}</span></div>${q.code?`<pre class="qcode">${esc(q.code)}</pre>`:''}`+
-    q.options.map((o,k)=>`<label class="qo" dir="auto"><input type="radio" name="q${i}-${n}" value="${k}"><span>${esc(o)}</span></label>`).join('')+`</div>`).join('')+
-    `<div class="qbar" data-home="${esc(s.home||'#')}"><button class="qbtn" type="button">تحقق من الإجابات</button></div><div class="qres" aria-live="polite"></div>`;
+  if(s.type==='quiz') body=`<p class="sub">${esc(s.intro||'')}</p>`+s.questions.map((q,n)=>`<div class="qz" id="q${i}-${n}" data-a="${q.answer}"><div class="qt" dir="${ar(q.q)?'rtl':'ltr'}"><span class="qn">${n+1}</span><span>${esc(q.q)}</span></div>${q.code?`<pre class="qcode">${esc(q.code)}</pre>`:''}`+
+    q.options.map((o,k)=>`<label class="qo" dir="${ar(o)?'rtl':'ltr'}"><input type="radio" name="q${i}-${n}" value="${k}"><span>${esc(o)}</span></label>`).join('')+`</div>`).join('')+
+    `<div class="qbar" data-home="${esc(s.home||'#')}"><button class="qbtn" type="button">تحقق من الإجابات</button><a class="qhome" href="${esc(s.home||'#')}">العودة للصفحة الرئيسية</a></div><div class="qres" aria-live="polite"></div>`;
   return `<section class="sec fade">${pill}${body}</section>`;
 }).join('');
 
@@ -288,7 +291,7 @@ document.querySelectorAll('.sec').forEach(sec=>{
         if(!c)empty.push(n);else if(+c.value===+q.dataset.a){q.classList.add('ok')}else{q.classList.add('no');bad.push(n)}});
       if(empty.length){res.className='qres bad';res.innerHTML='لم تجب بعد على: '+links(empty);}
       else if(bad.length){res.className='qres bad';res.innerHTML='هناك إجابة غير صحيحة في: '+links(bad)+'<br>راجع الإجابة وحاول مرة أخرى.';}
-      else{res.className='qres good';res.innerHTML='✓ أحسنت! أجبت على كل الأسئلة بشكل صحيح.<br><a class="qhome" href="'+home+'">العودة للصفحة الرئيسية</a>';}
+      else{res.className='qres good';res.innerHTML='✓ أحسنت! أجبت على كل الأسئلة بشكل صحيح.';}
       res.querySelectorAll('.qgo').forEach(a=>a.onclick=e=>{e.preventDefault();document.getElementById(a.dataset.t).scrollIntoView({behavior:'smooth',block:'center'})});
     };
   }
