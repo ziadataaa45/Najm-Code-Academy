@@ -105,6 +105,9 @@ footer img{display:block;width:100%;height:auto}
  .title{order:3;flex:1 1 100%}
 }
 svg.art{direction:ltr}
+.demo{overflow-wrap:anywhere}
+.ln>span:last-child{white-space:nowrap}
+.code.wrapcode .ln>span:last-child{white-space:normal;overflow-wrap:anywhere;flex:1;min-width:0}
 </style>
 </head>
 <body>
@@ -274,7 +277,7 @@ const LESSON = {
 
 const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 const ar=t=>/[\u0600-\u06FF]/.test(t);
-const bi=t=>esc(t).replace(/\(?[A-Za-z][A-Za-z0-9_'\-=+*\/]*(?:[ .,][A-Za-z0-9_'\-=+*\/()]+)*\)?/g,m=>'<bdi>'+m+'</bdi>');
+const bi=t=>esc(t.replace(/[(<]?[A-Za-z][A-Za-z0-9_'\-=+*\/]*(?:\([A-Za-z0-9_'\-=+*\/ ,.()]*\))?(?:[ .,]+[A-Za-z0-9_'\-=+*\/()<>]+)*[)>]?/g,m=>'\u0001'+m+'\u0002')).replace(/\u0001/g,'<bdi>').replace(/\u0002/g,'</bdi>');
 const hl=s=>esc(s).replace(/(&quot;|"[^"]*"|'[^']*')/g,m=>m==='&quot;'?m:`<span class="st">${m}</span>`)
   .replace(/(^|[\s=(])(-?\d+(\.\d+)?)(?![^<]*>)/g,'$1<span class="num">$2</span>').replace(/ = /,' <span class="eq">=</span> ');
 const COLORS={green:'--green',sky:'--sky',pink:'--pink',orange:'--orange',violet:'--violet'};
@@ -282,27 +285,27 @@ const BOX=`<svg class="art" viewBox="0 0 300 250"><g class="b"><ellipse cx="45" 
 
 const L=LESSON, $=id=>document.getElementById(id);
 document.title=L.title+' | Najm Code Academy';
-$('h1').textContent=L.title;
-$('h2').innerHTML=esc(L.subtitle||'')+(L.highlight?` <span>${esc(L.highlight)}</span>`:'');
-$('intro').textContent=L.intro; $('note').textContent=L.note;
+$('h1').innerHTML=bi(L.title);
+$('h2').innerHTML=bi(L.subtitle||'')+(L.highlight?` <span>${bi(L.highlight)}</span>`:'');
+$('intro').innerHTML=bi(L.intro); $('note').innerHTML=bi(L.note);
 
 $('sections').innerHTML=L.sections.map((s,i)=>{
-  const pill=`<div class="pill"><div class="n">${i+1}</div><div class="t">${esc(s.title)}</div></div>`;
+  const pill=`<div class="pill"><div class="n">${i+1}</div><div class="t">${bi(s.title)}</div></div>`;
   let body='';
-  if(s.type==='text') body=`<div class="row"><div class="txt">${s.paragraphs.map(p=>`<p>${esc(p)}</p>`).join('')}</div>${s.art==='box'?BOX:(s.art||'')}</div>`;
-  if(s.type==='code') body=`<div class="row"><div class="info"><p>${esc(s.intro||'')}</p>`+
+  if(s.type==='text') body=`<div class="row"><div class="txt">${s.paragraphs.map(p=>`<p>${bi(p)}</p>`).join('')}</div>${s.art==='box'?BOX:(s.art||'')}</div>`;
+  if(s.type==='code') body=`<div class="row"><div class="info"><p>${bi(s.intro||'')}</p>`+
     (s.formula?`<div class="formula"><span>${esc(s.formula[0])}</span><b>${esc(s.formula[1])}</b><span>${esc(s.formula[2])}</span></div>`:'')+
-    (s.bullets?`<ul>${s.bullets.map(b=>`<li>${esc(b)}</li>`).join('')}</ul>`:'')+`</div>
+    (s.bullets?`<ul>${s.bullets.map(b=>`<li>${bi(b)}</li>`).join('')}</ul>`:'')+`</div>
     <div class="code"><div class="dots"><i></i><i></i><i></i></div>`+
     s.lines.map((l,n)=>`<div class="ln" data-o="${esc(l.out||'')}"><span class="no">${n+1}</span><span>${hl(l.code)}</span></div>`).join('')+
     `<div class="out">▶ اضغط على سطر</div></div></div>`;
-  if(s.type==='cards') body=`<p class="sub">${esc(s.intro||'')}</p><div class="types">`+s.cards.map((c,n)=>`
+  if(s.type==='cards') body=`<p class="sub">${bi(s.intro||'')}</p><div class="types">`+s.cards.map((c,n)=>`
     <div class="ty" style="--c:var(${COLORS[c.color]||'--green'})" data-demo="${esc(c.demo||'')}">
       <div class="no">${n+1}</div><h4>${esc(c.name)} <small>(${esc(c.label)})</small></h4><div class="ex">مثال:</div>
-      <div class="chips">${c.examples.map(e=>`<span>${esc(e)}</span>`).join('')}</div><p>${esc(c.desc)}</p>
+      <div class="chips">${c.examples.map(e=>`<span>${esc(e)}</span>`).join('')}</div><p>${bi(c.desc)}</p>
       ${c.badge==='check'?'<div class="badge mk"><span class="ck">✓</span><span class="xx">✕</span></div>':`<div class="badge">${esc(c.badge)}</div>`}</div>`).join('')+
     `</div><div class="demo">▶ اضغط على أي بطاقة لترى مثالًا</div>`;
-  if(s.type==='quiz') body=`<p class="sub">${esc(s.intro||'')}</p>`+s.questions.map((q,n)=>`<div class="qz" id="q${i}-${n}" data-a="${q.answer}"><div class="qt" dir="${ar(q.q)?'rtl':'ltr'}"><span class="qn">${n+1}</span><span>${bi(q.q)}</span></div>`+
+  if(s.type==='quiz') body=`<p class="sub">${bi(s.intro||'')}</p>`+s.questions.map((q,n)=>`<div class="qz" id="q${i}-${n}" data-a="${q.answer}"><div class="qt" dir="${ar(q.q)?'rtl':'ltr'}"><span class="qn">${n+1}</span><span>${bi(q.q)}</span></div>`+
     q.options.map((o,k)=>`<label class="qo" dir="${ar(o)?'rtl':'ltr'}"><input type="radio" name="q${i}-${n}" value="${k}"><span>${bi(o)}</span></label>`).join('')+`</div>`).join('')+
     `<div class="qbar" data-home="${esc(s.home||'#')}"><button class="qbtn" type="button">تحقق من الإجابات</button><a class="qhome" href="${esc(s.home||'#')}">العودة للصفحة الرئيسية</a></div><div class="qres" aria-live="polite"></div>`;
   return `<section class="sec fade">${pill}${body}</section>`;
@@ -335,6 +338,29 @@ document.querySelectorAll('.sec').forEach(sec=>{
 });
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('show');io.unobserve(e.target)}}),{threshold:.1});
 document.querySelectorAll('.fade').forEach(el=>io.observe(el));
+
+/* يضبط حجم خط صندوق الكود تلقائيًا حسب عرض الصندوق، فلا يخرج أي سطر عن حدوده */
+const MIN_FS=12;
+const fitCode=()=>{document.querySelectorAll('.code').forEach(box=>{
+  box.style.fontSize=''; box.classList.remove('wrapcode');
+  const lns=[...box.querySelectorAll('.ln')]; if(!lns.length)return;
+  let fs=parseFloat(getComputedStyle(box).fontSize)||24;
+  const over=()=>lns.some(l=>l.scrollWidth>l.clientWidth+1);
+  if(over()){
+    const r=Math.max(...lns.map(l=>l.scrollWidth/Math.max(l.clientWidth,1)));
+    fs=Math.max(fs/r*0.98,MIN_FS); box.style.fontSize=fs+'px';
+    for(let i=0;i<12&&over()&&fs>MIN_FS;i++){fs=Math.max(fs*0.95,MIN_FS);box.style.fontSize=fs+'px';}
+    if(over())box.classList.add('wrapcode');  /* أصغر حجم مقروء: نسمح للسطر بالنزول لسطر ثانٍ بدل تصغير الخط أكثر */
+  }
+});};
+fitCode();
+window.addEventListener('load',fitCode);
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(fitCode);
+if(typeof ResizeObserver!=='undefined'){
+  const lastW=new WeakMap();
+  const ro=new ResizeObserver(es=>{let ch=false;es.forEach(e=>{const w=Math.round(e.contentRect.width);if(lastW.get(e.target)!==w){lastW.set(e.target,w);ch=true}});if(ch)fitCode();});
+  document.querySelectorAll('.code').forEach(b=>ro.observe(b));
+}else window.addEventListener('resize',fitCode);
 </script>
 </body>
 </html>

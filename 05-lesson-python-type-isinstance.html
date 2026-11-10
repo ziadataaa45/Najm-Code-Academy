@@ -109,6 +109,8 @@ footer img{display:block;width:100%;height:auto}
 }
 svg.art{direction:ltr}
 .demo{overflow-wrap:anywhere}
+.ln>span:last-child{white-space:nowrap}
+.code.wrapcode .ln>span:last-child{white-space:normal;overflow-wrap:anywhere;flex:1;min-width:0}
 </style>
 </head>
 <body>
@@ -325,6 +327,29 @@ document.querySelectorAll('.sec').forEach(sec=>{
 });
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('show');io.unobserve(e.target)}}),{threshold:.1});
 document.querySelectorAll('.fade').forEach(el=>io.observe(el));
+
+/* يضبط حجم خط صندوق الكود تلقائيًا حسب عرض الصندوق، فلا يخرج أي سطر عن حدوده */
+const MIN_FS=12;
+const fitCode=()=>{document.querySelectorAll('.code').forEach(box=>{
+  box.style.fontSize=''; box.classList.remove('wrapcode');
+  const lns=[...box.querySelectorAll('.ln')]; if(!lns.length)return;
+  let fs=parseFloat(getComputedStyle(box).fontSize)||24;
+  const over=()=>lns.some(l=>l.scrollWidth>l.clientWidth+1);
+  if(over()){
+    const r=Math.max(...lns.map(l=>l.scrollWidth/Math.max(l.clientWidth,1)));
+    fs=Math.max(fs/r*0.98,MIN_FS); box.style.fontSize=fs+'px';
+    for(let i=0;i<12&&over()&&fs>MIN_FS;i++){fs=Math.max(fs*0.95,MIN_FS);box.style.fontSize=fs+'px';}
+    if(over())box.classList.add('wrapcode');  /* أصغر حجم مقروء: نسمح للسطر بالنزول لسطر ثانٍ بدل تصغير الخط أكثر */
+  }
+});};
+fitCode();
+window.addEventListener('load',fitCode);
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(fitCode);
+if(typeof ResizeObserver!=='undefined'){
+  const lastW=new WeakMap();
+  const ro=new ResizeObserver(es=>{let ch=false;es.forEach(e=>{const w=Math.round(e.contentRect.width);if(lastW.get(e.target)!==w){lastW.set(e.target,w);ch=true}});if(ch)fitCode();});
+  document.querySelectorAll('.code').forEach(b=>ro.observe(b));
+}else window.addEventListener('resize',fitCode);
 </script>
 </body>
 </html>
