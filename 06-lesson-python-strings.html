@@ -322,6 +322,7 @@ const LESSON = {
 /* ================== نهاية منطقة التعديل ================== */
 
 const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const escA=s=>esc(s).replace(/"/g,'&quot;'); /* للقيم داخل خصائص HTML: تحمي علامات الاقتباس المزدوجة من قطع النص */
 const ar=t=>/[\u0600-\u06FF]/.test(t);
 const bi=t=>esc(t.replace(/-\d+(?:\.\d+)?|[(<]?[A-Za-z][A-Za-z0-9_'\-=+*\/]*(?:\([A-Za-z0-9_'\-=+*\/ ,.()]*\))?(?:[ .,]+[A-Za-z0-9_'\-=+*\/()<>]+)*[)>]?/g,m=>'\u0001'+m+'\u0002')).replace(/\u0001/g,'<bdi>').replace(/\u0002/g,'</bdi>');
 const hl=s=>esc(s).replace(/(&quot;|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')/g,m=>m==='&quot;'?m:`<span class="st">${m}</span>`)
@@ -343,10 +344,10 @@ $('sections').innerHTML=L.sections.map((s,i)=>{
     (s.formula?`<div class="formula"><span>${esc(s.formula[0])}</span><b>${esc(s.formula[1])}</b><span>${esc(s.formula[2])}</span></div>`:'')+
     (s.bullets?`<ul>${s.bullets.map(b=>`<li>${bi(b)}</li>`).join('')}</ul>`:'')+`</div>
     <div class="code"><div class="dots"><i></i><i></i><i></i></div>`+
-    s.lines.map((l,n)=>`<div class="ln" data-o="${esc(l.out||'')}"><span class="no">${n+1}</span><span>${hl(l.code)}</span></div>`).join('')+
+    s.lines.map((l,n)=>`<div class="ln" data-o="${escA(l.out||'')}"><span class="no">${n+1}</span><span>${hl(l.code)}</span></div>`).join('')+
     `<div class="out">▶ اضغط على سطر</div></div></div>`;
   if(s.type==='cards') body=`<p class="sub">${bi(s.intro||'')}</p><div class="types">`+s.cards.map((c,n)=>`
-    <div class="ty" style="--c:var(${COLORS[c.color]||'--green'})" data-demo="${esc(c.demo||'')}">
+    <div class="ty" style="--c:var(${COLORS[c.color]||'--green'})" data-demo="${escA(c.demo||'')}">
       <div class="no">${n+1}</div><h4>${esc(c.name)} <small>(${esc(c.label)})</small></h4><div class="ex">مثال:</div>
       <div class="chips">${c.examples.map(e=>`<span>${esc(e)}</span>`).join('')}</div><p>${bi(c.desc)}</p>
       ${c.badge==='check'?'<div class="badge mk"><span class="ck">✓</span><span class="xx">✕</span></div>':`<div class="badge">${esc(c.badge)}</div>`}</div>`).join('')+
