@@ -28,7 +28,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:30p
 .sec-title{font-size:26px;font-weight:900;color:var(--ink);margin-bottom:18px;display:flex;align-items:center;gap:12px}
 .sec-title::before{content:"";width:8px;height:32px;border-radius:6px;background:linear-gradient(180deg,#4a3fd0,#7a52e0)}
 .lesson{display:flex;align-items:center;gap:20px;flex-wrap:wrap;background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 26px;margin-bottom:18px;box-shadow:0 4px 20px rgba(60,80,160,.06);text-decoration:none;color:inherit;transition:transform .25s,box-shadow .25s,border-color .25s;animation:rise .6s both}
-.lesson:nth-child(2){animation-delay:.08s}.lesson:nth-child(3){animation-delay:.16s}.lesson:nth-child(4){animation-delay:.24s}.lesson:nth-child(5){animation-delay:.32s}.lesson:nth-child(6){animation-delay:.4s}
+.lesson:nth-child(2){animation-delay:.08s}.lesson:nth-child(3){animation-delay:.16s}.lesson:nth-child(4){animation-delay:.24s}.lesson:nth-child(5){animation-delay:.32s}.lesson:nth-child(6){animation-delay:.4s}.lesson:nth-child(7){animation-delay:.48s}.lesson:nth-child(8){animation-delay:.56s}
 .lesson:hover,.lesson:focus-visible{transform:translateY(-4px);border-color:var(--c);box-shadow:0 10px 24px rgba(60,80,160,.16);outline:none}
 .lesson .no{width:64px;height:64px;border-radius:50%;background:var(--c);color:#fff;font-size:34px;font-weight:900;display:grid;place-items:center;flex:none;box-shadow:0 3px 10px rgba(0,0,0,.18)}
 .lesson .info{flex:1 1 200px}
@@ -88,8 +88,8 @@ header{display:flex;align-items:center;justify-content:space-between;padding:30p
     <a class="lesson" style="--c:var(--pink)" href="03-lesson-python-print-function.html">
       <span class="no">3</span>
       <div class="info">
-        <h3>الدرس الثالث: كيف تعمل دالة print()؟</h3>
-        <p>في هذا الدرس سنتعرف على دالة print()، وكيف نستخدمها لعرض النصوص والقيم في الـ Terminal، ونكتب برنامجنا الأول Hello world!</p>
+        <h3>الدرس الثالث: كيف تعمل دالة <bdi>print()</bdi>؟</h3>
+        <p>في هذا الدرس سنتعرف على دالة <bdi>print()</bdi>، وكيف نستخدمها لعرض النصوص والقيم في الـ Terminal، ونكتب برنامجنا الأول Hello world!</p>
       </div>
       <span class="go">ابدأ الدرس</span>
     </a>
@@ -108,17 +108,37 @@ header{display:flex;align-items:center;justify-content:space-between;padding:30p
     <a class="lesson" style="--c:var(--violet)" href="05-lesson-python-type-isinstance.html">
       <span class="no">5</span>
       <div class="info">
-        <h3>الدرس الخامس: دالتا type() و isinstance()</h3>
-        <p>في هذا الدرس سنتعلم كيف نعرف نوع المتغير باستخدام الدالة type()، وكيف نتأكد من نوعه باستخدام الدالة isinstance().</p>
+        <h3>الدرس الخامس: دالتا <bdi>type()</bdi> و <bdi>isinstance()</bdi></h3>
+        <p>في هذا الدرس سنتعلم كيف نعرف نوع المتغير باستخدام الدالة <bdi>type()</bdi>، وكيف نتأكد من نوعه باستخدام الدالة <bdi>isinstance()</bdi>.</p>
+      </div>
+      <span class="go">ابدأ الدرس</span>
+    </a>
+
+    <!-- ورشة عمل: بين الدرس الخامس والدرس السادس -->
+    <a class="lesson" style="--c:var(--pink)" href="05-workshop-report-card-printer.html">
+      <span class="no">🛠</span>
+      <div class="info">
+        <h3>ورشة عمل: بناء طابعة بطاقة التقرير</h3>
+        <p>تدريب عملي: اكتب كود Python بنفسك داخل الصفحة، وطبّق المتغيرات وأنواع البيانات والدوال <bdi>print()</bdi> وtype() وisinstance() في 10 خطوات.</p>
+      </div>
+      <span class="go">ابدأ الورشة</span>
+    </a>
+
+    <!-- كارت الدرس السادس -->
+    <a class="lesson" style="--c:var(--green)" href="06-lesson-python-strings.html">
+      <span class="no">6</span>
+      <div class="info">
+        <h3>الدرس السادس: السلاسل النصية Strings وما معنى ثبات النص</h3>
+        <p>في هذا الدرس سنتعلم ما هي النصوص وكيف نكتبها، وكيف نتحقق من محتواها ونصل إلى حروفها، وما معنى أن النص غير قابل للتغيير (Immutable).</p>
       </div>
       <span class="go">ابدأ الدرس</span>
     </a>
 
     <!-- تيمبيلت إضافة درس جديد: انسخه، شيل علامات التعليق، وغيّر الرقم واللون (--green/--sky/--pink/--orange/--violet) والعنوان والوصف واسم الملف
-    <a class="lesson" style="--c:var(--violet)" href="06-lesson-xxxx.html">
-      <span class="no">6</span>
+    <a class="lesson" style="--c:var(--violet)" href="07-lesson-xxxx.html">
+      <span class="no">7</span>
       <div class="info">
-        <h3>الدرس السادس: </h3>
+        <h3>الدرس السابع: </h3>
         <p> </p>
       </div>
       <span class="go">ابدأ الدرس</span>
@@ -126,9 +146,9 @@ header{display:flex;align-items:center;justify-content:space-between;padding:30p
 
     <!-- تيمبيلت درس "قريباً" (غير قابل للضغط)
     <div class="lesson soon" style="--c:var(--violet)">
-      <span class="no">6</span>
+      <span class="no">7</span>
       <div class="info">
-        <h3>الدرس السادس: ... (قريباً)</h3>
+        <h3>الدرس السابع: ... (قريباً)</h3>
         <p>وصف مختصر للدرس.</p>
       </div>
       <span class="go">قريباً</span>
