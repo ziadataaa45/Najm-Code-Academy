@@ -28,7 +28,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:30p
 .sec-title{font-size:26px;font-weight:900;color:var(--ink);margin-bottom:18px;display:flex;align-items:center;gap:12px}
 .sec-title::before{content:"";width:8px;height:32px;border-radius:6px;background:linear-gradient(180deg,#4a3fd0,#7a52e0)}
 .lesson{display:flex;align-items:center;gap:20px;flex-wrap:wrap;background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 26px;margin-bottom:18px;box-shadow:0 4px 20px rgba(60,80,160,.06);text-decoration:none;color:inherit;transition:transform .25s,box-shadow .25s,border-color .25s;animation:rise .6s both}
-.lesson:nth-child(2){animation-delay:.08s}.lesson:nth-child(3){animation-delay:.16s}.lesson:nth-child(4){animation-delay:.24s}.lesson:nth-child(5){animation-delay:.32s}.lesson:nth-child(6){animation-delay:.4s}.lesson:nth-child(7){animation-delay:.48s}.lesson:nth-child(8){animation-delay:.56s}
+.lesson:nth-child(2){animation-delay:.08s}.lesson:nth-child(3){animation-delay:.16s}.lesson:nth-child(4){animation-delay:.24s}.lesson:nth-child(5){animation-delay:.32s}.lesson:nth-child(6){animation-delay:.4s}.lesson:nth-child(7){animation-delay:.48s}.lesson:nth-child(8){animation-delay:.56s}.lesson:nth-child(9){animation-delay:.64s}
 .lesson:hover,.lesson:focus-visible{transform:translateY(-4px);border-color:var(--c);box-shadow:0 10px 24px rgba(60,80,160,.16);outline:none}
 .lesson .no{width:64px;height:64px;border-radius:50%;background:var(--c);color:#fff;font-size:34px;font-weight:900;display:grid;place-items:center;flex:none;box-shadow:0 3px 10px rgba(0,0,0,.18)}
 .lesson .info{flex:1 1 200px}
@@ -134,11 +134,21 @@ header{display:flex;align-items:center;justify-content:space-between;padding:30p
       <span class="go">ابدأ الدرس</span>
     </a>
 
-    <!-- تيمبيلت إضافة درس جديد: انسخه، شيل علامات التعليق، وغيّر الرقم واللون (--green/--sky/--pink/--orange/--violet) والعنوان والوصف واسم الملف
-    <a class="lesson" style="--c:var(--violet)" href="07-lesson-xxxx.html">
+    <!-- كارت الدرس السابع -->
+    <a class="lesson" style="--c:var(--sky)" href="07-lesson-python-string-concatenation.html">
       <span class="no">7</span>
       <div class="info">
-        <h3>الدرس السابع: </h3>
+        <h3>الدرس السابع: دمج النصوص وتضمين القيم</h3>
+        <p>في هذا الدرس سنتعلم دمج النصوص (Concatenation)، وتكرارها، وتحويل الأرقام إلى نصوص بالدالة <bdi>str()</bdi>، وتضمين المتغيرات داخل النص باستخدام f-strings.</p>
+      </div>
+      <span class="go">ابدأ الدرس</span>
+    </a>
+
+    <!-- تيمبيلت إضافة درس جديد: انسخه، شيل علامات التعليق، وغيّر الرقم واللون (--green/--sky/--pink/--orange/--violet) والعنوان والوصف واسم الملف
+    <a class="lesson" style="--c:var(--violet)" href="08-lesson-xxxx.html">
+      <span class="no">8</span>
+      <div class="info">
+        <h3>الدرس الثامن: </h3>
         <p> </p>
       </div>
       <span class="go">ابدأ الدرس</span>
@@ -146,9 +156,9 @@ header{display:flex;align-items:center;justify-content:space-between;padding:30p
 
     <!-- تيمبيلت درس "قريباً" (غير قابل للضغط)
     <div class="lesson soon" style="--c:var(--violet)">
-      <span class="no">7</span>
+      <span class="no">8</span>
       <div class="info">
-        <h3>الدرس السابع: ... (قريباً)</h3>
+        <h3>الدرس الثامن: ... (قريباً)</h3>
         <p>وصف مختصر للدرس.</p>
       </div>
       <span class="go">قريباً</span>
