@@ -28,7 +28,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:30p
 .sec-title{font-size:26px;font-weight:900;color:var(--ink);margin-bottom:18px;display:flex;align-items:center;gap:12px}
 .sec-title::before{content:"";width:8px;height:32px;border-radius:6px;background:linear-gradient(180deg,#4a3fd0,#7a52e0)}
 .lesson{display:flex;align-items:center;gap:20px;flex-wrap:wrap;background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 26px;margin-bottom:18px;box-shadow:0 4px 20px rgba(60,80,160,.06);text-decoration:none;color:inherit;transition:transform .25s,box-shadow .25s,border-color .25s;animation:rise .6s both}
-.lesson:nth-child(2){animation-delay:.08s}.lesson:nth-child(3){animation-delay:.16s}.lesson:nth-child(4){animation-delay:.24s}.lesson:nth-child(5){animation-delay:.32s}.lesson:nth-child(6){animation-delay:.4s}.lesson:nth-child(7){animation-delay:.48s}.lesson:nth-child(8){animation-delay:.56s}.lesson:nth-child(9){animation-delay:.64s}.lesson:nth-child(10){animation-delay:.72s}.lesson:nth-child(11){animation-delay:.8s}.lesson:nth-child(12){animation-delay:.88s}
+.lesson:nth-child(2){animation-delay:.08s}.lesson:nth-child(3){animation-delay:.16s}.lesson:nth-child(4){animation-delay:.24s}.lesson:nth-child(5){animation-delay:.32s}.lesson:nth-child(6){animation-delay:.4s}.lesson:nth-child(7){animation-delay:.48s}.lesson:nth-child(8){animation-delay:.56s}.lesson:nth-child(9){animation-delay:.64s}.lesson:nth-child(10){animation-delay:.72s}.lesson:nth-child(11){animation-delay:.8s}.lesson:nth-child(12){animation-delay:.88s}.lesson:nth-child(13){animation-delay:.96s}
 .lesson:hover,.lesson:focus-visible{transform:translateY(-4px);border-color:var(--c);box-shadow:0 10px 24px rgba(60,80,160,.16);outline:none}
 .lesson .no{width:64px;height:64px;border-radius:50%;background:var(--c);color:#fff;font-size:34px;font-weight:900;display:grid;place-items:center;flex:none;box-shadow:0 3px 10px rgba(0,0,0,.18)}
 .lesson .info{flex:1 1 200px}
@@ -154,6 +154,16 @@ header{display:flex;align-items:center;justify-content:space-between;padding:30p
       <span class="go">ابدأ الدرس</span>
     </a>
 
+    <!-- ورشة عمل: بعد الدرس الثامن (تقطيع النصوص) -->
+    <a class="lesson" style="--c:var(--violet)" href="08-workshop-employee-profile-generator.html">
+      <span class="no">🛠</span>
+      <div class="info">
+        <h3>ورشة عمل: بناء مولّد ملف الموظف</h3>
+        <p>تدريب عملي في 18 خطوة: اكتب كود Python بنفسك لدمج النصوص، وتحويل الأرقام بالدالة <bdi>str()</bdi>، وتضمين المتغيرات باستخدام f-strings، وتقطيع النصوص.</p>
+      </div>
+      <span class="go">ابدأ الورشة</span>
+    </a>
+
     <!-- كارت الدرس التاسع -->
     <a class="lesson" style="--c:var(--orange)" href="09-lesson-python-string-methods.html">
       <span class="no">9</span>
@@ -164,12 +174,12 @@ header{display:flex;align-items:center;justify-content:space-between;padding:30p
       <span class="go">ابدأ الدرس</span>
     </a>
 
-    <!-- ورشة عمل: بعد الدرس الثامن (تقطيع النصوص) -->
-    <a class="lesson" style="--c:var(--violet)" href="09-workshop-employee-profile-generator.html">
+    <!-- ورشة عمل: بعد الدرس التاسع (دوال النصوص) -->
+    <a class="lesson" style="--c:var(--sky)" href="09-workshop-employee-profile-validator.html">
       <span class="no">🛠</span>
       <div class="info">
-        <h3>ورشة عمل: بناء مولّد ملف الموظف</h3>
-        <p>تدريب عملي في 18 خطوة: اكتب كود Python بنفسك لدمج النصوص، وتحويل الأرقام بالدالة <bdi>str()</bdi>، وتضمين المتغيرات باستخدام f-strings، وتقطيع النصوص.</p>
+        <h3>ورشة عمل: بناء مدقّق ملف الموظف</h3>
+        <p>تدريب عملي في 22 خطوة: اكتب كود Python بنفسك لتنظيف البيانات وفحصها باستخدام دوال النصوص مثل <bdi>find()</bdi> و<bdi>strip()</bdi> و<bdi>replace()</bdi> و<bdi>split()</bdi> و<bdi>join()</bdi>.</p>
       </div>
       <span class="go">ابدأ الورشة</span>
     </a>
