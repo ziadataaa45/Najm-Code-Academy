@@ -28,7 +28,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:30p
 .sec-title{font-size:26px;font-weight:900;color:var(--ink);margin-bottom:18px;display:flex;align-items:center;gap:12px}
 .sec-title::before{content:"";width:8px;height:32px;border-radius:6px;background:linear-gradient(180deg,#4a3fd0,#7a52e0)}
 .lesson{display:flex;align-items:center;gap:20px;flex-wrap:wrap;background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 26px;margin-bottom:18px;box-shadow:0 4px 20px rgba(60,80,160,.06);text-decoration:none;color:inherit;transition:transform .25s,box-shadow .25s,border-color .25s;animation:rise .6s both}
-.lesson:nth-child(2){animation-delay:.08s}.lesson:nth-child(3){animation-delay:.16s}.lesson:nth-child(4){animation-delay:.24s}.lesson:nth-child(5){animation-delay:.32s}.lesson:nth-child(6){animation-delay:.4s}.lesson:nth-child(7){animation-delay:.48s}.lesson:nth-child(8){animation-delay:.56s}.lesson:nth-child(9){animation-delay:.64s}.lesson:nth-child(10){animation-delay:.72s}.lesson:nth-child(11){animation-delay:.8s}.lesson:nth-child(12){animation-delay:.88s}.lesson:nth-child(13){animation-delay:.96s}.lesson:nth-child(14){animation-delay:1.04s}.lesson:nth-child(15){animation-delay:1.12s}
+.lesson:nth-child(2){animation-delay:.08s}.lesson:nth-child(3){animation-delay:.16s}.lesson:nth-child(4){animation-delay:.24s}.lesson:nth-child(5){animation-delay:.32s}.lesson:nth-child(6){animation-delay:.4s}.lesson:nth-child(7){animation-delay:.48s}.lesson:nth-child(8){animation-delay:.56s}.lesson:nth-child(9){animation-delay:.64s}.lesson:nth-child(10){animation-delay:.72s}.lesson:nth-child(11){animation-delay:.8s}.lesson:nth-child(12){animation-delay:.88s}.lesson:nth-child(13){animation-delay:.96s}.lesson:nth-child(14){animation-delay:1.04s}.lesson:nth-child(15){animation-delay:1.12s}.lesson:nth-child(16){animation-delay:1.2s}.lesson:nth-child(17){animation-delay:1.28s}.lesson:nth-child(18){animation-delay:1.36s}
 .lesson:hover,.lesson:focus-visible{transform:translateY(-4px);border-color:var(--c);box-shadow:0 10px 24px rgba(60,80,160,.16);outline:none}
 .lesson .no{width:64px;height:64px;border-radius:50%;background:var(--c);color:#fff;font-size:34px;font-weight:900;display:grid;place-items:center;flex:none;box-shadow:0 3px 10px rgba(0,0,0,.18)}
 .lesson .info{flex:1 1 200px}
@@ -204,11 +204,41 @@ header{display:flex;align-items:center;justify-content:space-between;padding:30p
       <span class="go">ابدأ الدرس</span>
     </a>
 
-    <!-- تيمبيلت إضافة درس جديد: انسخه، شيل علامات التعليق، وغيّر الرقم واللون (--green/--sky/--pink/--orange/--violet) والعنوان والوصف واسم الملف
-    <a class="lesson" style="--c:var(--violet)" href="12-lesson-xxxx.html">
+    <!-- ورشة عمل: بعد الدرس الحادي عشر -->
+    <a class="lesson" style="--c:var(--pink)" href="11-workshop-bill-splitter.html">
+      <span class="no">🛠</span>
+      <div class="info">
+        <h3>ورشة عمل: بناء مقسّم الفواتير</h3>
+        <p>تدريب عملي في 8 خطوات: اكتب كود Python بنفسك لحساب إجمالي فاتورة وإضافة إكرامية وتقسيمها على الأصدقاء، باستخدام العامل <bdi>+=</bdi> والدالة <bdi>round()</bdi>.</p>
+      </div>
+      <span class="go">ابدأ الورشة</span>
+    </a>
+
+    <!-- كارت الدرس الثاني عشر -->
+    <a class="lesson" style="--c:var(--orange)" href="12-lesson-python-conditionals.html">
       <span class="no">12</span>
       <div class="info">
-        <h3>الدرس الثاني عشر: </h3>
+        <h3>الدرس الثاني عشر: الجمل الشرطية وعوامل المقارنة</h3>
+        <p>في هذا الدرس سنتعلم عوامل المقارنة التي تعيد True أو False، وكيف يتخذ برنامجك قرارات باستخدام الجمل الشرطية <bdi>if</bdi> و<bdi>elif</bdi> و<bdi>else</bdi>.</p>
+      </div>
+      <span class="go">ابدأ الدرس</span>
+    </a>
+
+    <!-- أداة: المترجم التفاعلي -->
+    <a class="lesson" style="--c:var(--sky)" href="python-compiler.html">
+      <span class="no">💻</span>
+      <div class="info">
+        <h3>المترجم التفاعلي: جرّب كود Python</h3>
+        <p>اكتب أي كود Python وشغّله مباشرة داخل الصفحة، وشاهد الناتج. مناسب لتجربة ما تتعلمه في الدروس والورش.</p>
+      </div>
+      <span class="go">افتح المترجم</span>
+    </a>
+
+    <!-- تيمبيلت إضافة درس جديد: انسخه، شيل علامات التعليق، وغيّر الرقم واللون (--green/--sky/--pink/--orange/--violet) والعنوان والوصف واسم الملف
+    <a class="lesson" style="--c:var(--violet)" href="13-lesson-xxxx.html">
+      <span class="no">13</span>
+      <div class="info">
+        <h3>الدرس الثالث عشر: </h3>
         <p> </p>
       </div>
       <span class="go">ابدأ الدرس</span>
@@ -216,9 +246,9 @@ header{display:flex;align-items:center;justify-content:space-between;padding:30p
 
     <!-- تيمبيلت درس "قريباً" (غير قابل للضغط)
     <div class="lesson soon" style="--c:var(--violet)">
-      <span class="no">12</span>
+      <span class="no">13</span>
       <div class="info">
-        <h3>الدرس الثاني عشر: ... (قريباً)</h3>
+        <h3>الدرس الثالث عشر: ... (قريباً)</h3>
         <p>وصف مختصر للدرس.</p>
       </div>
       <span class="go">قريباً</span>
