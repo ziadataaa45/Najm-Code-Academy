@@ -190,12 +190,12 @@ const LESSON = {
     { type: "cards", title: "علامات الاقتباس داخل النص",
       intro: "إذا كان النص نفسه يحتوي على علامة اقتباس مفردة أو مزدوجة، فلديك خياران. اضغط على كل بطاقة:",
       cards: [
-        { color: "green",  name: "Opposite", label: "علامات معاكسة", examples: ["\"It's a sunny day\""],
+        { color: "green",  name: "Opposite", label: "علامات معاكسة", examples: ["\"It\'s a sunny day\""],
           desc: "استخدم النوع المعاكس: إذا كان النص يحتوي على علامة اقتباس مفردة فأحِطه بعلامات مزدوجة، والعكس صحيح.", badge: "\" '",
-          demo: "quote = 'She said, \"Hello World!\"'" },
-        { color: "orange", name: "Escape", label: "الهروب بشرطة مائلة", examples: ["\\'", "\\\""],
+          demo: "It's a sunny day" },
+        { color: "orange", name: "Escape", label: "الهروب بشرطة مائلة", examples: ['\'It\\\'s a sunny day\'' ],
           desc: "ضع شرطة مائلة عكسية (\\) قبل علامة الاقتباس داخل النص. وبهذه الطريقة يمكنك إحاطة النص نفسه بأي نوع من علامات الاقتباس.", badge: "\\",
-          demo: "msg = 'It\\'s a sunny day'" } ] },
+          demo: 'It\'s a sunny day' } ] },
 
     /* 4) أمثلة الطريقتين — صندوق كود عريض */
     { type: "code", wide: true, title: "أمثلة على الطريقتين",
@@ -204,10 +204,10 @@ const LESSON = {
         "السطران الأولان: استخدام النوع المعاكس من علامات الاقتباس.",
         "السطران الأخيران: الهروب من علامة الاقتباس بشرطة مائلة عكسية (\\)." ],
       lines: [
-        { code: 'msg = "It\'s a sunny day"',             out: "msg → It's a sunny day" },
+        { code: "msg = \"It's a sunny day\"",           out: "msg → It's a sunny day" },
+        { code: "msg = 'It\\'s a sunny day'",             out: "msg → It's a sunny day" },
         { code: "quote = 'She said, \"Hello World!\"'", out: 'quote → She said, "Hello World!"' },
-        { code: "msg = 'It\\'s a sunny day'",           out: "msg → It's a sunny day" },
-        { code: 'quote = "She said, \\"Hello!\\""',   out: 'quote → She said, "Hello!"' } ] },
+        { code: 'quote = "She said, \\"Hello World!\\""',   out: 'quote → She said, "Hello World!"' } ] },
 
     /* 5) العامل in */
     { type: "code", title: "العامل in",
