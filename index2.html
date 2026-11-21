@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f7f8ff">
+<title>Najm Code Academy | كورس Python</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#101d67;--blue:#1754d8;--purple:#6424d6;--purple2:#8d35e9;--muted:#65719d;--line:#e1e6f7;--surface:#fff;--bg:#f7f8ff;--soft:#eef1ff;--shadow:0 8px 28px rgba(37,54,135,.09)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--navy);font-family:'Cairo',Tahoma,sans-serif;line-height:1.7}
+a{color:inherit;text-decoration:none}button,input{font:inherit}.shell{width:min(1500px,calc(100% - 48px));margin:auto}
+.topbar{height:112px;display:flex;align-items:center;justify-content:space-between;gap:28px}
+.brand{direction:ltr;display:flex;flex-direction:column;align-items:flex-start;min-width:205px;line-height:1;position:relative}
+.brand-name{font-size:49px;font-weight:900;letter-spacing:-3px;background:linear-gradient(100deg,#168be9 5%,#3b62e9 42%,#d32eae 90%);background-clip:text;-webkit-background-clip:text;color:transparent}
+.brand-name:after{content:"★";position:absolute;color:#ffc928;font-size:23px;top:-12px;left:91px;text-shadow:0 2px 5px #f5d86b}
+.brand-sub{font-size:20px;font-weight:900;color:#092b81;margin-top:-2px}
+.brand-wave{width:164px;height:10px;margin-top:4px}
+.nav{display:flex;align-items:center;justify-content:center;gap:34px;flex:1}
+.nav a{font-weight:800;font-size:16px;white-space:nowrap;padding:14px 0;display:flex;align-items:center;gap:9px;border-bottom:3px solid transparent}
+.nav a.active{border-color:var(--purple);color:var(--purple)}
+.nav svg{width:21px;height:21px;fill:currentColor}
+.search{width:300px;position:relative;flex:none}
+.search input{width:100%;border:2px solid #dfe3f2;border-radius:30px;padding:12px 48px 12px 18px;background:#fff;color:var(--navy);outline:none;box-shadow:inset 0 2px 5px #1c2a6810}
+.search input:focus{border-color:#8b6be5}
+.search svg{position:absolute;right:17px;top:13px;width:22px;height:22px;stroke:var(--navy);fill:none;stroke-width:2.5}
+.hero{min-height:286px;border-radius:20px;overflow:hidden;position:relative;display:grid;grid-template-columns: minmax(230px, .9fr) minmax(350px,1.25fr) minmax(270px,1fr);align-items:center;padding:25px 36px;background:linear-gradient(110deg,#e8edff,#f9faff 55%,#e9edff);box-shadow:var(--shadow);isolation:isolate}
+.hero:before{content:"";position:absolute;z-index:-1;inset:auto -3% -90px -3%;height:145px;background:linear-gradient(100deg,#6b83f4,#9a8cf5 55%,#4269e8);border-radius:50% 50% 0 0/35% 35% 0 0;transform:rotate(-2deg)}
+.hero:after{content:"";position:absolute;z-index:-1;bottom:-58px;left:18%;width:48%;height:105px;background:#cbd3ff;opacity:.65;transform:rotate(8deg);border-radius:50%}
+.python-art{display:grid;place-items:center}
+.python-mark{width:min(270px,100%);filter:drop-shadow(0 13px 10px #1b3b8a35)}
+.hero-main{padding:0 24px}
+.eyebrow{font-size:14px;font-weight:800;color:#6b55d7;letter-spacing:.3px}
+.hero h1{font-size:60px;line-height:1.1;margin:0;color:#1243c9;font-weight:900;direction:ltr;text-align:right}
+.hero-sub{font-size:22px;font-weight:800;margin:8px 0 12px}
+.pills{display:flex;gap:9px;flex-wrap:wrap;margin:12px 0 15px}
+.pill{border:1px solid #dce2fa;background:#ffffffb8;border-radius:24px;padding:6px 14px;font-size:14px;font-weight:800;box-shadow:0 3px 9px #253a8a10;display:flex;align-items:center;gap:7px}
+.pill svg{width:17px;height:17px;stroke:#365be0;fill:none;stroke-width:2.5}
+.cta{display:inline-flex;align-items:center;gap:12px;border:0;border-radius:30px;padding:11px 32px;background:linear-gradient(100deg,#6d20d4,#8c2be2);color:white;font-size:19px;font-weight:900;box-shadow:0 6px 14px #6424d644;transition:.2s}
+.cta:hover{transform:translateY(-2px);filter:brightness(1.07)}
+.hero-description{border-right:2px solid #cbd1f4;padding:10px 30px 10px 0;font-size:21px;line-height:1.9;font-weight:800;color:#0e1d62}
+.content{display:grid;grid-template-columns:minmax(0,2.2fr) minmax(280px,.9fr);gap:24px;margin:26px 0 38px;align-items:start}
+.panel{background:var(--surface);border:1.5px solid #dce3f6;border-radius:20px;box-shadow:var(--shadow);overflow:hidden}
+.panel-heading{background:linear-gradient(100deg,#7123d7,#5420bd);color:white;display:flex;align-items:center;justify-content:space-between;padding:10px 22px;font-size:21px;font-weight:900}
+.panel-heading span{display:flex;align-items:center;gap:10px}
+.panel-heading svg{width:23px;height:23px;stroke:white;fill:none;stroke-width:2.2}
+.lesson-list{padding:9px 18px 0}
+.lesson-row{min-height:58px;display:grid;grid-template-columns:62px 1fr 42px;align-items:center;gap:12px;padding:7px 12px;border-bottom:1px solid #edf0f8;transition:.2s}
+.lesson-row:hover{background:#f0f2ff;border-radius:12px}
+.lesson-row:first-child{background:linear-gradient(90deg,#eef1ff,#e5eaff);border-radius:13px}
+.play{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(140deg,#a03bea,#5d20c8);color:white;box-shadow:0 3px 8px #6025c333}
+.play svg{width:17px;height:17px;fill:white;margin-right:-2px}
+.lesson-name{font-size:20px;font-weight:800}
+.lesson-number{width:40px;height:40px;border-radius:50%;background:#e9edff;display:grid;place-items:center;font-weight:900;font-size:18px}
+.lesson-row.completed .lesson-number{background:#e1f8ed;color:#13945a}
+.lesson-row.completed .lesson-number:after{content:"✓"}
+.lesson-row.completed .lesson-number{font-size:0}
+.lesson-row.completed .lesson-number:after{font-size:20px}
+.lesson-row.completed .lesson-name{color:#7b86a9}
+.lesson-row.completed .play{background:linear-gradient(140deg,#1ab56e,#0c9255)}
+.more-wrap{padding:13px 18px;background:#f6f5ff;margin:8px 18px 14px;border-radius:14px;text-align:center}
+.more-btn{border:0;border-radius:30px;background:#e8e0ff;color:#3c19a6;font-weight:900;padding:9px 28px;cursor:pointer}
+.more-btn:hover{background:#ded1ff}
+.sidebar{display:grid;gap:18px}
+.progress-body{padding:14px 22px 18px;text-align:center}
+.progress-ring{width:142px;height:142px;margin:0 auto 6px;position:relative}
+.progress-ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.progress-ring circle{fill:none;stroke-width:10}
+.progress-track{stroke:#e4e7f4}
+.progress-value{stroke:#7626df;stroke-linecap:round;stroke-dasharray:314;stroke-dashoffset:314;transition:stroke-dashoffset .35s}
+.progress-label{position:absolute;inset:0;display:grid;place-items:center;font-size:29px;font-weight:900;direction:ltr}
+.progress-caption{font-weight:800;font-size:17px}
+.progress-bar{height:15px;background:#dce0ee;border-radius:20px;margin-top:10px;overflow:hidden}
+.progress-bar span{display:block;height:100%;width:0;background:linear-gradient(90deg,#6220d4,#8734e9);border-radius:20px;transition:width .3s}
+.quick-links{padding:0 18px 8px}
+.quick-links a{display:flex;justify-content:space-between;align-items:center;padding:9px 4px;border-bottom:1px solid #edf0f8;font-weight:800}
+.quick-links a:last-child{border:0}
+.quick-links a:hover{color:var(--purple)}
+.quick-links .arrow{font-size:25px;line-height:1}
+.about{margin:0 0 36px;padding:18px 22px;background:#fff;border:1px solid var(--line);border-radius:16px;color:#59658f;font-weight:600}
+.footer{position:relative;overflow:hidden;background:linear-gradient(105deg,#123c9f,#174bb7 65%,#5d20bb);color:white;padding:28px 0 24px;margin-top:42px}
+.footer:before{content:"";position:absolute;left:-5%;right:-5%;top:-45px;height:75px;background:var(--bg);border-radius:0 0 50% 50%/0 0 70% 70%;transform:rotate(-1deg)}
+.footer-inner{position:relative;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.footer .brand-sub{color:#fff}.footer .brand-name{color:#fff;background:none;-webkit-text-fill-color:#fff;font-size:42px}.footer .brand-name:after{display:none}.footer .brand-wave{display:none}
+.slogan{font-size:27px;font-weight:900}.social{display:flex;gap:13px}.social a{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(145deg,#a02bea,#5420bc);box-shadow:0 4px 12px #071d6a66}.social svg{width:24px;height:24px;fill:white}
+.empty{padding:28px;text-align:center;color:var(--muted);display:none}
+@media(max-width:1050px){.topbar{height:auto;padding:20px 0;flex-wrap:wrap}.nav{order:3;flex-basis:100%;gap:24px}.search{width:260px}.hero{grid-template-columns:220px 1fr}.hero-description{grid-column:1/-1;border-right:0;border-top:1px solid #cbd1f4;padding:12px 0 0;margin-top:12px;font-size:17px}.hero h1{font-size:48px}.content{grid-template-columns:minmax(0,1.8fr) minmax(250px,1fr)}}
+@media(max-width:720px){.shell{width:min(100% - 28px,560px)}.topbar{gap:14px}.brand{min-width:145px}.brand-name{font-size:39px}.brand-sub{font-size:16px}.brand-wave{width:135px}.search{width:100%;order:4}.nav{gap:17px;justify-content:space-between;overflow:auto}.nav a{font-size:13px;gap:5px}.nav svg{width:17px}.hero{grid-template-columns:1fr;padding:22px 20px;text-align:center}.python-art{grid-row:1}.python-mark{width:145px}.hero-main{padding:0}.hero h1{text-align:center;font-size:46px}.hero-sub{font-size:18px}.pills{justify-content:center}.hero-description{text-align:center;font-size:16px}.cta{font-size:16px}.content{grid-template-columns:1fr;gap:16px}.sidebar{grid-template-columns:1fr}.panel-heading{font-size:18px}.lesson-row{grid-template-columns:48px 1fr 38px;gap:8px;padding:7px 4px}.play{width:36px;height:36px}.lesson-name{font-size:16px}.lesson-number{width:34px;height:34px}.footer-inner{flex-direction:column;text-align:center}.slogan{font-size:21px}.footer .brand{align-items:center}.about{font-size:14px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="shell">
+<header class="topbar">
+  <a class="brand" href="#top" aria-label="Najm Code Academy">
+    <span class="brand-name">Najm</span><span class="brand-sub">Code Academy</span>
+    <svg class="brand-wave" viewBox="0 0 170 10"><path d="M2 6 Q48 -2 88 6 T168 4" fill="none" stroke="#168be9" stroke-width="3" stroke-linecap="round"/></svg>
+  </a>
+  <nav class="nav" aria-label="القائمة الرئيسية">
+    <a class="active" href="#courses"><svg viewBox="0 0 24 24"><path d="M2 8 12 3l10 5-10 5L2 8Zm4 4.2V17c3.5 3 8.5 3 12 0v-4.8l-6 3-6-3Z"/></svg>الكورسات</a>
+    <a href="#courses"><svg viewBox="0 0 24 24"><path d="M5 3h14a2 2 0 0 1 2 2v16l-4-2-5 2-5-2-4 2V5a2 2 0 0 1 2-2Zm3 5h8M8 12h8M8 16h5" fill="none" stroke="currentColor" stroke-width="2"/></svg>مكتبة الدروس</a>
+    <a href="#about"><svg viewBox="0 0 24 24"><path d="M12 2 2 7l10 5 10-5-10-5Zm-7 9v6l7 4 7-4v-6l-7 4-7-4Z"/></svg>عن الأكاديمية</a>
+    <a href="mailto:hello@najmcode.academy"><svg viewBox="0 0 24 24"><path d="M3 5h18v14H3zM3 6l9 7 9-7" fill="none" stroke="currentColor" stroke-width="2"/></svg>تواصل معنا</a>
+  </nav>
+  <label class="search"><svg viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="7.3"/><path d="m16.2 16.2 5 5"/></svg><input id="searchInput" type="search" placeholder="ابحث عن درس ..." aria-label="ابحث عن درس"></label>
+</header>
+
+<main id="top">
+<section class="hero">
+  <div class="python-art" aria-label="شعار Python">
+    <svg class="python-mark" viewBox="0 0 280 230" role="img" aria-label="Python">
+      <defs>
+        <linearGradient id="pyBlue" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#38b8ff"/><stop offset="1" stop-color="#0752bd"/></linearGradient>
+        <linearGradient id="pyGold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffe66a"/><stop offset="1" stop-color="#f39a00"/></linearGradient>
+      </defs>
+      <path d="M132 12c-43 0-42 18-42 18v39h79v12H58S27 77 27 119s31 39 31 39h19v-27s-1-28 29-28h58s27 0 27-27V42s3-30-59-30Z" fill="url(#pyBlue)" stroke="#1765cb" stroke-width="2"/>
+      <circle cx="119" cy="35" r="6" fill="#fff"/>
+      <path d="M148 218c43 0 42-18 42-18v-39h-79v-12h111s31 4 31-38-31-39-31-39h-19v27s1 28-29 28h-58s-27 0-27 27v34s-3 30 59 30Z" fill="url(#pyGold)" stroke="#e8a000" stroke-width="2"/>
+      <circle cx="161" cy="195" r="6" fill="#fff"/>
+      <path d="M18 48 6 33m26 4-4-24m13 42 12-14" stroke="#28a9f4" stroke-width="9" stroke-linecap="round"/>
+      <path d="M225 24 238 9m-2 35 22-5" stroke="#ffc62e" stroke-width="8" stroke-linecap="round"/>
+    </svg>
+  </div>
+  <div class="hero-main">
+    <div class="eyebrow">مسار تعليمي من نَجم كود</div>
+    <h1>Python</h1>
+    <div class="hero-sub">تعلم لغة بايثون من الصفر حتى الاحتراف</div>
+    <div class="pills">
+      <span class="pill"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>ساعات تعلم مرنة</span>
+      <span class="pill"><svg viewBox="0 0 24 24"><path d="M4 19V9m6 10V5m6 14v-7m4 7V3"/></svg>مستوى المبتدئين</span>
+      <span class="pill"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m10 8 6 4-6 4V8Z"/></svg>12 درسًا + ورش عملية</span>
+    </div>
+    <a class="cta" href="#courses">ابدأ التعلم الآن <span>▶</span></a>
+  </div>
+  <div class="hero-description">Python هي لغة برمجة سهلة وقوية،<br>تُستخدم في مجالات متعددة مثل:<br>الذكاء الاصطناعي، تحليل البيانات،<br>وتطوير التطبيقات.</div>
+</section>
+
+<section class="content" id="courses">
+  <div class="panel">
+    <div class="panel-heading"><span>دروس كورس <bdi>Python</bdi></span><span><svg viewBox="0 0 24 24"><path d="M4 4h6v16H4zM14 4h6v16h-6zM10 7h4M10 12h4M10 17h4"/></svg></span></div>
+    <div class="lesson-list" id="lessonList">
+      <a class="lesson-row" data-id="l1" href="01-lesson-python-intro.html"><span class="play"><svg viewBox="0 0 24 24"><path d="M7 4v16l13-8z"/></svg></span><span class="lesson-name">مقدمة عن Python</span><span class="lesson-number">1</span></a>
+      <a class="lesson-row" data-id="l2" href="02-lesson-python-variables-naming.html"><span class="play"><svg viewBox="0 0 24 24"><path d="M7 4v16l13-8z"/></svg></span><span class="lesson-name">المتغيرات وقواعد تسميتها</span><span class="lesson-number">2</span></a>
+      <a class="lesson-row" data-id="l3" href="03-lesson-python-print-function.html"><span class="play"><svg viewBox="0 0 24 24"><path d="M7 4v16l13-8z"/></svg></span><span class="lesson-name">دالة <bdi>print()</bdi></span><span class="lesson-number">3</span></a>
+      <a class="lesson-row" data-id="l4" href="04-lesson-python-data-types.html"><span class="play"><svg viewBox="0 0 24 24"><path d="M7 4v16l13-8z"/></svg></span><span class="lesson-name">أنواع البيانات</span><span class="lesson-number">4</span></a>
+      <a class="lesson-row" data-id="l5" href="05-lesson-python-type-isinstance.html"><span class="play"><svg viewBox="0 0 24 24"><path d="M7 4v16l13-8z"/></svg></span><span class="lesson-name">دالتا <bdi>type()</bdi> و <bdi>isinstance()</bdi></span><span class="lesson-number">5</span></a>
+      <a class="lesson-row" data-id="l6" href="06-lesson-python-strings.html"><span class="play"><svg viewBox="0 0 24 24"><path d="M7 4v16l13-8z"/></svg></span><span class="lesson-name">السلاسل النصية <bdi>Strings</bdi></span><span class="lesson-number">6</span></a>
+      <a class="lesson-row" data-id="l7" href="07-lesson-python-string-concatenation.html"><span class="play"><svg viewBox="0 0 24 24"><path d="M7 4v16l13-8z"/></svg></span><span class="lesson-name">دمج النصوص وتضمين القيم</span><span class="lesson-number">7</span></a>
+      <a class="lesson-row" data-id="l8" href="08-lesson-python-string-slicing.html"><span class="play"><svg viewBox="0 0 24 24"><path d="M7 4v16l13-8z"/></svg></span><span class="lesson-name">تقطيع النصوص <bdi>Slicing</bdi></span><span class="lesson-number">8</span></a>
+      <a class="lesson-row" data-id="l9" href="09-lesson-python-string-methods.html"><span class="play"><svg viewBox="0 0 24 24"><path d="M7 4v16l13-8z"/></svg></span><span class="lesson-name">دوال النصوص <bdi>String Methods</bdi></span><span class="lesson-number">9</span></a>
+      <a class="lesson-row" data-id="l10" href="10-lesson-python-integers-floats.html"><span class="play"><svg viewBox="0 0 24 24"><path d="M7 4v16l13-8z"/></svg></span><span class="lesson-name">الأعداد الصحيحة والعشرية</span><span class="lesson-number">10</span></a>
+      <a class="lesson-row" data-id="l11" href="11-lesson-python-augmented-assignment.html"><span class="play"><svg viewBox="0 0 24 24"><path d="M7 4v16l13-8z"/></svg></span><span class="lesson-name">الإسناد المركّب</span><span class="lesson-number">11</span></a>
+      <a class="lesson-row" data-id="l12" href="12-lesson-python-conditionals.html"><span class="play"><svg viewBox="0 0 24 24"><path d="M7 4v16l13-8z"/></svg></span><span class="lesson-name">الجمل الشرطية وعوامل المقارنة</span><span class="lesson-number">12</span></a>
+    </div>
+    <div class="empty" id="emptyState">لا توجد دروس تطابق البحث.</div>
+    <div class="more-wrap"><button class="more-btn" id="moreBtn" type="button">عرض المزيد من الدروس ﹀</button></div>
+  </div>
+
+  <aside class="sidebar">
+    <section class="panel">
+      <div class="panel-heading"><span>نسبة التقدم في الكورس</span><span><svg viewBox="0 0 24 24"><path d="M4 20V12h4v8H4Zm6 0V5h4v15h-4Zm6 0V9h4v11h-4Z"/></svg></span></div>
+      <div class="progress-body">
+        <div class="progress-ring"><svg viewBox="0 0 120 120"><circle class="progress-track" cx="60" cy="60" r="50"/><circle class="progress-value" id="progressCircle" cx="60" cy="60" r="50"/></svg><div class="progress-label" id="progressLabel">0%</div></div>
+        <div class="progress-caption" id="progressCaption">0 من 12 درس مكتمل</div>
+        <div class="progress-bar"><span id="progressBar"></span></div>
+      </div>
+    </section>
+    <section class="panel">
+      <div class="panel-heading"><span>روابط سريعة</span><span>⚡</span></div>
+      <div class="quick-links">
+        <a href="05-workshop-report-card-printer.html">تمارين وتحديات <span class="arrow">‹</span></a>
+        <a href="08-workshop-employee-profile-generator.html">ورش العمل <span class="arrow">‹</span></a>
+        <a href="09-workshop-employee-profile-validator.html">موارد إضافية <span class="arrow">‹</span></a>
+        <a href="11-workshop-bill-splitter.html">ورشة مقسّم الفواتير <span class="arrow">‹</span></a>
+        <a href="python-compiler.html">مترجم Python التفاعلي <span class="arrow">‹</span></a>
+      </div>
+    </section>
+  </aside>
+</section>
+
+<section class="about" id="about">أكاديمية نَجم كود — نتعلم اليوم لنصنع الغد. ابدأ رحلتك في البرمجة خطوة بخطوة من خلال الدروس والتطبيقات العملية.</section>
+</main>
+</div>
+<footer class="footer">
+  <div class="shell footer-inner">
+    <a class="brand" href="#top"><span class="brand-name">Najm</span><span class="brand-sub">Code Academy</span></a>
+    <div class="slogan">⭐ تعلم اليوم ... تصنع غدًا</div>
+    <div class="social" aria-label="روابط التواصل">
+      <a href="#courses" aria-label="YouTube"><svg viewBox="0 0 24 24"><path d="M23 7a3 3 0 0 0-2-2C19 4.5 12 4.5 12 4.5s-7 0-9 .5a3 3 0 0 0-2 2A30 30 0 0 0 .5 12 30 30 0 0 0 1 17a3 3 0 0 0 2 2c2 .5 9 .5 9 .5s7 0 9-.5a3 3 0 0 0 2-2 30 30 0 0 0 .5-5 30 30 0 0 0-.5-5ZM9.5 15.5v-7l6 3.5-6 3.5Z"/></svg></a>
+      <a href="#courses" aria-label="Facebook"><svg viewBox="0 0 24 24"><path d="M13.5 21v-8h2.7l.4-3h-3.1V8.1c0-.9.3-1.5 1.6-1.5h1.7V3.9c-.3 0-1.3-.1-2.5-.1-2.5 0-4.2 1.5-4.2 4.3V10H7.3v3h2.8v8h3.4Z"/></svg></a>
+      <a href="#courses" aria-label="Telegram"><svg viewBox="0 0 24 24"><path d="m21.8 4.2-3.3 15.5c-.2 1.1-.9 1.4-1.8.9l-5-3.7-2.4 2.3c-.3.3-.5.5-1 .5l.4-5.1 9.3-8.4c.4-.4-.1-.6-.6-.2L6 13.2l-4.9-1.5c-1.1-.3-1.1-1 .2-1.5L20.4 3c.9-.3 1.7.2 1.4 1.2Z"/></svg></a>
+    </div>
+  </div>
+</footer>
+<script>
+(() => {
+  const rows = [...document.querySelectorAll('.lesson-row')];
+  const list = document.getElementById('lessonList');
+  const moreBtn = document.getElementById('moreBtn');
+  const search = document.getElementById('searchInput');
+  const empty = document.getElementById('emptyState');
+  const storageKey = 'najm-python-completed-v1';
+  let completed = [];
+  try { completed = JSON.parse(localStorage.getItem(storageKey) || '[]'); } catch { completed = []; }
+  const updateProgress = () => {
+    const count = rows.filter(row => completed.includes(row.dataset.id)).length;
+    const percent = Math.round(count / rows.length * 100);
+    document.getElementById('progressLabel').textContent = percent + '%';
+    document.getElementById('progressCaption').textContent = `${count} من ${rows.length} درس مكتمل`;
+    document.getElementById('progressBar').style.width = percent + '%';
+    document.getElementById('progressCircle').style.strokeDashoffset = 314 - (314 * percent / 100);
+  };
+  rows.forEach(row => {
+    if (completed.includes(row.dataset.id)) row.classList.add('completed');
+    row.addEventListener('contextmenu', event => {
+      event.preventDefault();
+      const id = row.dataset.id;
+      completed = completed.includes(id) ? completed.filter(item => item !== id) : [...completed, id];
+      try { localStorage.setItem(storageKey, JSON.stringify(completed)); } catch {}
+      row.classList.toggle('completed', completed.includes(id));
+      updateProgress();
+    });
+  });
+  updateProgress();
+
+  let expanded = false;
+  const showRows = () => {
+    const query = search.value.trim().toLocaleLowerCase('ar');
+    let visible = 0;
+    rows.forEach((row, index) => {
+      const matches = row.textContent.toLocaleLowerCase('ar').includes(query);
+      const show = matches && (expanded || query || index < 5);
+      row.hidden = !show;
+      if (show) visible++;
+    });
+    empty.style.display = visible ? 'none' : 'block';
+    moreBtn.style.display = query ? 'none' : 'inline-block';
+    moreBtn.textContent = expanded ? 'عرض دروس أقل ︿' : 'عرض المزيد من الدروس ﹀';
+  };
+  moreBtn.addEventListener('click', () => { expanded = !expanded; showRows(); });
+  search.addEventListener('input', () => { expanded = false; showRows(); });
+  showRows();
+})();
+</script>
+<script src="najm-tools.js"></script>
+</body>
+</html>
