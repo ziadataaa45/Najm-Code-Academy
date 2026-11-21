@@ -9,7 +9,7 @@
    ============================================================ */
 (function () {
   /* ✏️ إعدادات يمكنك تعديلها */
-  var COMPILER_URL = 'python-compiler.html';
+  var COMPILER_URL = 'https://onecompiler.com/python';
   var LABEL = 'جرّب الكود في المترجم';
 
   /* لا نعرض الزرار داخل صفحة المترجم نفسها */
