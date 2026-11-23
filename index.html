@@ -28,7 +28,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:30p
 .sec-title{font-size:26px;font-weight:900;color:var(--ink);margin-bottom:18px;display:flex;align-items:center;gap:12px}
 .sec-title::before{content:"";width:8px;height:32px;border-radius:6px;background:linear-gradient(180deg,#4a3fd0,#7a52e0)}
 .lesson{display:flex;align-items:center;gap:20px;flex-wrap:wrap;background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:22px 26px;margin-bottom:18px;box-shadow:0 4px 20px rgba(60,80,160,.06);text-decoration:none;color:inherit;transition:transform .25s,box-shadow .25s,border-color .25s;animation:rise .6s both}
-.lesson:nth-child(2){animation-delay:.08s}.lesson:nth-child(3){animation-delay:.16s}.lesson:nth-child(4){animation-delay:.24s}.lesson:nth-child(5){animation-delay:.32s}.lesson:nth-child(6){animation-delay:.4s}.lesson:nth-child(7){animation-delay:.48s}.lesson:nth-child(8){animation-delay:.56s}.lesson:nth-child(9){animation-delay:.64s}.lesson:nth-child(10){animation-delay:.72s}.lesson:nth-child(11){animation-delay:.8s}.lesson:nth-child(12){animation-delay:.88s}.lesson:nth-child(13){animation-delay:.96s}.lesson:nth-child(14){animation-delay:1.04s}.lesson:nth-child(15){animation-delay:1.12s}.lesson:nth-child(16){animation-delay:1.2s}.lesson:nth-child(17){animation-delay:1.28s}.lesson:nth-child(18){animation-delay:1.36s}
+.lesson:nth-child(2){animation-delay:.08s}.lesson:nth-child(3){animation-delay:.16s}.lesson:nth-child(4){animation-delay:.24s}.lesson:nth-child(5){animation-delay:.32s}.lesson:nth-child(6){animation-delay:.4s}.lesson:nth-child(7){animation-delay:.48s}.lesson:nth-child(8){animation-delay:.56s}.lesson:nth-child(9){animation-delay:.64s}.lesson:nth-child(10){animation-delay:.72s}.lesson:nth-child(11){animation-delay:.8s}.lesson:nth-child(12){animation-delay:.88s}.lesson:nth-child(13){animation-delay:.96s}.lesson:nth-child(14){animation-delay:1.04s}.lesson:nth-child(15){animation-delay:1.12s}.lesson:nth-child(16){animation-delay:1.2s}.lesson:nth-child(17){animation-delay:1.28s}.lesson:nth-child(18){animation-delay:1.36s}.lesson:nth-child(19){animation-delay:1.44s}.lesson:nth-child(20){animation-delay:1.52s}
 .lesson:hover,.lesson:focus-visible{transform:translateY(-4px);border-color:var(--c);box-shadow:0 10px 24px rgba(60,80,160,.16);outline:none}
 .lesson .no{width:64px;height:64px;border-radius:50%;background:var(--c);color:#fff;font-size:34px;font-weight:900;display:grid;place-items:center;flex:none;box-shadow:0 3px 10px rgba(0,0,0,.18)}
 .lesson .info{flex:1 1 200px}
@@ -42,6 +42,8 @@ header{display:flex;align-items:center;justify-content:space-between;padding:30p
 @keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
 @media(max-width:820px){header{flex-direction:column}.logo{order:-1;margin:0 auto}.title h1{font-size:36px}.title h2{font-size:22px}.page{padding:0 18px 24px}.lesson{padding:18px}}
 @media(prefers-reduced-motion:reduce){.lesson{animation:none}}
+.lesson.back-here{border-color:var(--c);box-shadow:0 0 0 4px color-mix(in srgb,var(--c) 35%,transparent),0 10px 24px rgba(60,80,160,.16);animation:hereflash 2.4s ease-out 1}
+@keyframes hereflash{0%,60%{box-shadow:0 0 0 6px color-mix(in srgb,var(--c) 55%,transparent)}100%{box-shadow:0 0 0 4px color-mix(in srgb,var(--c) 35%,transparent),0 10px 24px rgba(60,80,160,.16)}}
 </style>
 </head>
 <body>
@@ -224,8 +226,28 @@ header{display:flex;align-items:center;justify-content:space-between;padding:30p
       <span class="go">ابدأ الدرس</span>
     </a>
 
+    <!-- كارت الدرس الثالث عشر -->
+    <a class="lesson" style="--c:var(--pink)" href="13-lesson-python-boolean-operators.html">
+      <span class="no">13</span>
+      <div class="info">
+        <h3>الدرس الثالث عشر: القيم الصادقة والكاذبة والعوامل المنطقية</h3>
+        <p>في هذا الدرس سنتعرف على القيم الصادقة والكاذبة (Truthy and Falsy)، والعوامل <bdi>and</bdi> و<bdi>or</bdi> و<bdi>not</bdi>، والدائرة القصيرة (Short-circuiting).</p>
+      </div>
+      <span class="go">ابدأ الدرس</span>
+    </a>
+
+    <!-- كارت الدرس الرابع عشر -->
+    <a class="lesson" style="--c:var(--violet)" href="14-lesson-python-identity-operators.html">
+      <span class="no">14</span>
+      <div class="info">
+        <h3>الدرس الرابع عشر: عوامل الهوية</h3>
+        <p>في هذا الدرس سنتعرف على عوامل الهوية <bdi>is</bdi> و<bdi>is not</bdi>، والفرق بينها وبين المساواة، وكيف نفحص <bdi>None</bdi> و<bdi>True</bdi> و<bdi>False</bdi>.</p>
+      </div>
+      <span class="go">ابدأ الدرس</span>
+    </a>
+
     <!-- أداة: المترجم التفاعلي -->
-    <a class="lesson" style="--c:var(--sky)" target="_blank" href="https://onecompiler.com/python">
+    <a class="lesson" style="--c:var(--sky)" href="python-compiler.html">
       <span class="no">💻</span>
       <div class="info">
         <h3>المترجم التفاعلي: جرّب كود Python</h3>
@@ -235,10 +257,10 @@ header{display:flex;align-items:center;justify-content:space-between;padding:30p
     </a>
 
     <!-- تيمبيلت إضافة درس جديد: انسخه، شيل علامات التعليق، وغيّر الرقم واللون (--green/--sky/--pink/--orange/--violet) والعنوان والوصف واسم الملف
-    <a class="lesson" style="--c:var(--violet)" href="13-lesson-xxxx.html">
-      <span class="no">13</span>
+    <a class="lesson" style="--c:var(--violet)" href="15-lesson-xxxx.html">
+      <span class="no">15</span>
       <div class="info">
-        <h3>الدرس الثالث عشر: </h3>
+        <h3>الدرس الخامس عشر: </h3>
         <p> </p>
       </div>
       <span class="go">ابدأ الدرس</span>
@@ -246,16 +268,34 @@ header{display:flex;align-items:center;justify-content:space-between;padding:30p
 
     <!-- تيمبيلت درس "قريباً" (غير قابل للضغط)
     <div class="lesson soon" style="--c:var(--violet)">
-      <span class="no">13</span>
+      <span class="no">15</span>
       <div class="info">
-        <h3>الدرس الثالث عشر: ... (قريباً)</h3>
+        <h3>الدرس الخامس عشر: ... (قريباً)</h3>
         <p>وصف مختصر للدرس.</p>
       </div>
       <span class="go">قريباً</span>
     </div> -->
   </main>
-<script src="najm-tools.js"></script>
+
   <div class="foot">جميع الحقوق محفوظة © أكاديمية نَجم كود 2026</div>
 </div>
+<script>
+/* العودة إلى نفس المكان: نتذكر آخر درس أو ورشة فتحتها، وعند الرجوع للصفحة الرئيسية ننزل إليها */
+(function(){
+  var KEY='najm-last-opened';
+  var cards=[].slice.call(document.querySelectorAll('a.lesson'));
+  cards.forEach(function(a){ a.addEventListener('click',function(){ try{ sessionStorage.setItem(KEY,a.getAttribute('href')); }catch(e){} }); });
+  function goBack(){
+    var last=null; try{ last=sessionStorage.getItem(KEY); sessionStorage.removeItem(KEY); }catch(e){}
+    if(!last) return;
+    var el=cards.filter(function(a){ return a.getAttribute('href')===last; })[0];
+    if(!el) return;
+    setTimeout(function(){ el.scrollIntoView({block:'center'}); el.classList.add('back-here'); }, 450);
+  }
+  goBack();
+  window.addEventListener('pageshow',function(e){ if(e.persisted) goBack(); });
+})();
+</script>
+<script src="najm-tools.js"></script>
 </body>
 </html>

@@ -224,7 +224,7 @@ svg.art{direction:ltr}
    والتحقق من كل خطوة موجود في دالة بايثون داخل HELPER.
    ============================================================ */
 const WS = {
-  title: "بناء طابعة بطاقة التقرير",
+  title: "بناء و طابعة بطاقة التقرير",
   subtitle: "ورشة عملية لتطبيق أنواع البيانات في", highlight: "Python",
   intro: "في هذه الورشة ستتدرب على أنواع البيانات في Python بإنشاء بيانات بطاقة تقرير بسيطة وطباعتها. اكتب الكود بنفسك، ثم اضغط «تشغيل» لترى الناتج، و«تحقق» لتعرف هل خطوتك صحيحة.",
   note: "في هذه الورشة طبّقت ما تعلمته: إنشاء المتغيرات، وطباعتها بالدالة print()، ومعرفة النوع بالدالة type()، والتحقق منه بالدالة isinstance()، مع الأنواع str وbool وint وfloat.",
@@ -352,41 +352,105 @@ const maxStep = () => { let i=0; while(i<N && st.done[i]) i++; return Math.min(i
 if(!(st.cur>=0 && st.cur<N) || st.cur>maxStep()) st.cur = maxStep();
 const save = () => { try{ localStorage.setItem(KEY, JSON.stringify(st)); }catch(e){} };
 
-/* ---------- محرك بايثون (Pyodide) داخل Web Worker ---------- */
-const workerSrc = `importScripts('${PY_BASE}pyodide.js');
-let py=null;
-const boot=(async()=>{try{py=await loadPyodide({indexURL:'${PY_BASE}'});py.runPython(${JSON.stringify(HELPER)});postMessage({type:'ready'});}catch(err){postMessage({type:'fatal',msg:String(err)});}})();
-onmessage=async e=>{await boot;const d=e.data;if(!py){postMessage({type:'fatal'});return;}
-try{py.globals.set('student_code',d.code);const r=py.runPython('run_and_check(student_code,'+d.step+','+(d.check?'True':'False')+')');postMessage({type:'result',id:d.id,res:JSON.parse(r)});}
-catch(err){postMessage({type:'result',id:d.id,res:{ok:false,checked:!!d.check,out:'',kind:'InternalError',err:String(err),line:null,msg:''}});}};`;
 let worker=null, ready=false, seq=0; const pending=new Map();
 const TIMEOUT=12000;
 
-function setStatus(kind){
+/* ---------- محرك بايثون (Pyodide): عدة مصادر + بديل لو الـ Worker فشل ---------- */
+const PY_SOURCES = [
+  'https://cdn.jsdelivr.net/pyodide/v0.26.4/full/',
+  'https://cdn.jsdelivr.net/npm/pyodide@0.26.4/',
+  'https://unpkg.com/pyodide@0.26.4/',
+  'https://fastly.jsdelivr.net/npm/pyodide@0.26.4/'
+];
+const BOOT_TIMEOUT = 90000;
+let bootTry=0, lastErr='';
+
+function setStatus(kind, extra){
   const el=$('pystat'); el.className='pystat '+kind;
-  el.innerHTML = kind==='loading' ? '<span class="spin"></span> جاري تجهيز Python… قد يستغرق ذلك بعض الوقت في أول مرة.'
-    : kind==='ready' ? '✓ Python جاهزة، اكتب الكود وجرّبه.'
-    : 'تعذّر تحميل Python. تأكد من اتصالك بالإنترنت ثم أعد تحميل الصفحة.';
+  if(kind==='loading'){
+    el.innerHTML = '<span class="spin"></span> جاري تجهيز Python… قد يستغرق ذلك بعض الوقت في أول مرة.' + (extra?'<div style="font-size:13px;font-weight:600;opacity:.75;margin-top:4px">'+extra+'</div>':'');
+  } else if(kind==='ready'){
+    el.innerHTML = '✓ Python جاهزة، اكتب الكود وجرّبه.';
+  } else {
+    el.innerHTML = 'تعذّر تحميل Python. تأكد من اتصالك بالإنترنت ثم اضغط «إعادة المحاولة».'
+      + ' <button type="button" class="ws-btn" id="pyretry" style="margin-inline-start:8px">إعادة المحاولة</button>'
+      + (lastErr?'<div dir="ltr" style="font-size:12px;font-weight:500;color:var(--text);opacity:.7;margin-top:6px;word-break:break-all">'+esc(lastErr).slice(0,300)+'</div>':'');
+    const b=$('pyretry'); if(b) b.onclick=()=>{bootTry=0; lastErr=''; startWorker();};
+  }
   const dis = kind!=='ready';
   $('run').disabled=dis; $('check').disabled=dis;
 }
-function startWorker(){
-  ready=false; setStatus('loading');
-  try{
-    worker=new Worker(URL.createObjectURL(new Blob([workerSrc],{type:'text/javascript'})));
-  }catch(e){ setStatus('fail'); return; }
-  worker.onmessage=e=>{
-    const d=e.data;
-    if(d.type==='ready'){ready=true;setStatus('ready');}
-    else if(d.type==='fatal'){setStatus('fail');}
-    else if(d.type==='result'){const p=pending.get(d.id); if(p){pending.delete(d.id);clearTimeout(p.t);p.resolve(d.res);}}
+
+const HELPER_BOOT = (base) => `importScripts('${base}pyodide.js');`;
+const pyWorkerSrc = (base) => `${HELPER_BOOT(base)}
+let py=null;
+const boot=(async()=>{try{py=await loadPyodide({indexURL:'${base}'});py.runPython(${JSON.stringify(HELPER)});postMessage({type:'ready'});}catch(err){postMessage({type:'fatal',msg:String(err&&err.message||err)});}})();
+onmessage=async e=>{await boot;const d=e.data;if(!py){postMessage({type:'fatal'});return;}
+try{py.globals.set('student_code',d.code);const r=py.runPython('run_and_check(student_code,'+d.step+','+(d.check?'True':'False')+')');postMessage({type:'result',id:d.id,res:JSON.parse(r)});}
+catch(err){postMessage({type:'result',id:d.id,res:{ok:false,checked:!!d.check,out:'',kind:'InternalError',err:String(err),line:null,msg:''}});}};`;
+
+/* تشغيل بايثون في الصفحة نفسها (بديل لو المتصفح منع الـ Worker) */
+function makeMainThreadEngine(base, onmsg){
+  let py=null, failed=false;
+  const s=document.createElement('script'); s.src=base+'pyodide.js';
+  const boot=new Promise((res,rej)=>{ s.onload=res; s.onerror=()=>rej(new Error('script load failed: '+base)); document.head.appendChild(s); })
+    .then(()=>loadPyodide({indexURL:base}))
+    .then(p=>{py=p; py.runPython(HELPER); onmsg({data:{type:'ready'}});})
+    .catch(err=>{failed=true; onmsg({data:{type:'fatal',msg:String(err&&err.message||err)}});});
+  return {
+    postMessage:async d=>{
+      await boot; if(failed||!py) return;
+      let res;
+      try{ py.globals.set('student_code',d.code); res=JSON.parse(py.runPython('run_and_check(student_code,'+d.step+','+(d.check?'True':'False')+')')); }
+      catch(err){ res={ok:false,checked:!!d.check,out:'',kind:'InternalError',err:String(err),line:null,msg:''}; }
+      onmsg({data:{type:'result',id:d.id,res}});
+    },
+    terminate:()=>{}
   };
-  worker.onerror=()=>{ if(!ready) setStatus('fail'); };
+}
+
+/* الترتيب: كل مصدر بالـ Worker، ولو كلهم فشلوا نجرب أول مصدرين في الصفحة نفسها */
+function attempts(){
+  const list=[]; PY_SOURCES.forEach(b=>list.push({base:b,mode:'worker'}));
+  PY_SOURCES.slice(0,2).forEach(b=>list.push({base:b,mode:'main'}));
+  return list;
+}
+function startWorker(){
+  ready=false;
+  if(worker){try{worker.terminate()}catch(e){} worker=null;}
+  const list=attempts();
+  if(bootTry>=list.length){ setStatus('fail'); return; }
+  const {base,mode}=list[bootTry];
+  const myTry=bootTry;
+  setStatus('loading', bootTry>0 ? ('محاولة '+(bootTry+1)+' من '+list.length+'…') : '');
+  let settled=false;
+  const failThis=(msg)=>{
+    if(settled || myTry!==bootTry) return; settled=true; clearTimeout(bootT);
+    lastErr=(msg||'unknown error')+' ['+mode+' @ '+base.replace(/^https?:\/\//,'').split('/')[0]+']';
+    try{worker&&worker.terminate()}catch(e){} worker=null;
+    bootTry++; startWorker();
+  };
+  const handler=e=>{
+    const d=e.data;
+    if(d.type==='ready'){ if(settled||myTry!==bootTry) return; settled=true; clearTimeout(bootT); ready=true; setStatus('ready'); }
+    else if(d.type==='fatal'){ failThis(d.msg); }
+    else if(d.type==='result'){ const p=pending.get(d.id); if(p){pending.delete(d.id);clearTimeout(p.t);p.resolve(d.res);} }
+  };
+  const bootT=setTimeout(()=>failThis('boot timeout'),BOOT_TIMEOUT);
+  if(mode==='worker'){
+    try{
+      worker=new Worker(URL.createObjectURL(new Blob([pyWorkerSrc(base)],{type:'text/javascript'})));
+    }catch(e){ failThis(String(e)); return; }
+    worker.onmessage=handler;
+    worker.onerror=ev=>{ if(!ready) failThis((ev&&ev.message)||'worker error'); };
+  } else {
+    worker=makeMainThreadEngine(base, handler);
+  }
 }
 function execPy(code, step, check){
   return new Promise(resolve=>{
     const id=++seq;
-    const t=setTimeout(()=>{pending.delete(id);try{worker.terminate()}catch(e){} startWorker(); resolve({timeout:true});},TIMEOUT);
+    const t=setTimeout(()=>{pending.delete(id);try{worker.terminate()}catch(e){} bootTry=0; startWorker(); resolve({timeout:true});},TIMEOUT);
     pending.set(id,{resolve,t});
     worker.postMessage({id,code,step,check});
   });
