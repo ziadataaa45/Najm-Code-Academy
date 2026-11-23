@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101827">
+  <title>اختبار تشغيل Python على الموبايل</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; padding: 20px; background: #101827; color: #eef2ff;
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif; line-height: 1.7;
+    }
+    main { max-width: 760px; margin: 0 auto; }
+    h1 { font-size: 1.45rem; margin: 0 0 8px; }
+    p { color: #c5cee0; }
+    .panel {
+      background: #1b2638; border: 1px solid #344258; border-radius: 14px;
+      padding: 16px; margin: 16px 0;
+    }
+    button {
+      border: 0; border-radius: 10px; padding: 12px 16px; margin: 5px 0;
+      background: #3b82f6; color: white; font-size: 1rem; font-weight: 700;
+      min-height: 46px; cursor: pointer;
+    }
+    button:disabled { opacity: .45; cursor: not-allowed; }
+    textarea {
+      display: block; width: 100%; min-height: 150px; resize: vertical;
+      direction: ltr; text-align: left; background: #0b1220; color: #e5e7eb;
+      border: 1px solid #52627a; border-radius: 10px; padding: 12px;
+      font: 16px/1.5 ui-monospace, SFMono-Regular, Consolas, monospace;
+      -webkit-user-select: text; user-select: text;
+    }
+    pre {
+      min-height: 75px; white-space: pre-wrap; overflow-wrap: anywhere;
+      direction: ltr; text-align: left; background: #0b1220; color: #a7f3d0;
+      border: 1px solid #344258; border-radius: 10px; padding: 12px;
+    }
+    #status { font-weight: 700; color: #fbbf24; }
+    .hint { font-size: .92rem; color: #aebbd0; }
+  </style>
+</head>
+<body>
+<main>
+  <h1>اختبار Python على الموبايل</h1>
+  <p>الصفحة دي اختبار مستقل لمعرفة هل Pyodide يقدر يتحمّل ويشغّل Python داخل صفحة HTML على جهازك.</p>
+
+  <section class="panel">
+    <p id="status">الحالة: لم يبدأ التحميل بعد.</p>
+    <button id="loadBtn" type="button">1) تحميل Python</button>
+    <p class="hint">اضغط مرة واحدة وانتظر. أول تحميل قد يستغرق بعض الوقت حسب سرعة الإنترنت.</p>
+  </section>
+
+  <section class="panel">
+    <label for="code"><strong>2) اكتب كود Python هنا:</strong></label>
+    <textarea id="code" spellcheck="false">name = "Python"
+print("Hello from", name)
+print(2 + 3)</textarea>
+    <button id="runBtn" type="button" disabled>تشغيل الكود</button>
+    <strong>الناتج:</strong>
+    <pre id="output">سيظهر الناتج هنا.</pre>
+  </section>
+
+  <section class="panel">
+    <strong>تفاصيل الخطأ أو التحميل:</strong>
+    <pre id="details">لا توجد تفاصيل حتى الآن.</pre>
+  </section>
+</main>
+
+<script>
+(() => {
+  "use strict";
+
+  const PYODIDE_VERSION = "0.25.1";
+  const BASE_URL = `https://cdn.jsdelivr.net/pyodide/v${PYODIDE_VERSION}/full/`;
+
+  const statusEl = document.getElementById("status");
+  const detailsEl = document.getElementById("details");
+  const outputEl = document.getElementById("output");
+  const loadBtn = document.getElementById("loadBtn");
+  const runBtn = document.getElementById("runBtn");
+  const codeEl = document.getElementById("code");
+
+  let pyodide = null;
+  let loading = false;
+
+  function showError(error) {
+    const message = error && (error.stack || error.message)
+      ? (error.stack || error.message)
+      : String(error);
+    detailsEl.textContent = message;
+    statusEl.textContent = "الحالة: حدث خطأ أثناء التحميل أو التشغيل.";
+    statusEl.style.color = "#fca5a5";
+  }
+
+  loadBtn.addEventListener("click", async () => {
+    if (pyodide || loading) return;
+
+    loading = true;
+    loadBtn.disabled = true;
+    statusEl.textContent = "الحالة: جاري تحميل مكتبة Python...";
+    statusEl.style.color = "#fbbf24";
+    detailsEl.textContent = "تحميل pyodide.js ثم تهيئة Python...";
+
+    try {
+      const script = document.createElement("script");
+      script.src = BASE_URL + "pyodide.js";
+      script.async = true;
+
+      await new Promise((resolve, reject) => {
+        script.onload = resolve;
+        script.onerror = () => reject(new Error("تعذر تحميل pyodide.js من: " + script.src));
+        document.head.appendChild(script);
+      });
+
+      if (typeof loadPyodide !== "function") {
+        throw new Error("تم تحميل الملف، لكن الدالة loadPyodide غير متاحة.");
+      }
+
+      pyodide = await loadPyodide({ indexURL: BASE_URL });
+
+      statusEl.textContent = "الحالة: تم تحميل Python بنجاح. جرّب تشغيل الكود.";
+      statusEl.style.color = "#86efac";
+      detailsEl.textContent = "Pyodide " + PYODIDE_VERSION + " جاهز.";
+      runBtn.disabled = false;
+    } catch (error) {
+      pyodide = null;
+      showError(error);
+      loadBtn.disabled = false;
+    } finally {
+      loading = false;
+    }
+  });
+
+  runBtn.addEventListener("click", async () => {
+    if (!pyodide) return;
+
+    runBtn.disabled = true;
+    outputEl.textContent = "جاري التشغيل...";
+    try {
+      const result = await pyodide.runPythonAsync(codeEl.value);
+      outputEl.textContent = result === undefined ? "تم التنفيذ. (لا توجد قيمة إرجاع)" : String(result);
+      detailsEl.textContent = "تم تنفيذ الكود دون أخطاء.";
+    } catch (error) {
+      outputEl.textContent = "حدث خطأ في كود Python.";
+      showError(error);
+    } finally {
+      runBtn.disabled = false;
+    }
+  });
+})();
+</script>
+</body>
+</html>
