@@ -352,109 +352,405 @@ const maxStep = () => { let i=0; while(i<N && st.done[i]) i++; return Math.min(i
 if(!(st.cur>=0 && st.cur<N) || st.cur>maxStep()) st.cur = maxStep();
 const save = () => { try{ localStorage.setItem(KEY, JSON.stringify(st)); }catch(e){} };
 
-let worker=null, ready=false, seq=0; const pending=new Map();
-const TIMEOUT=12000;
+let worker = null;
+let ready = false;
+let seq = 0;
+const pending = new Map();
 
-/* ---------- محرك بايثون (Pyodide): عدة مصادر + بديل لو الـ Worker فشل ---------- */
-const PY_SOURCES = [
-  'https://cdn.jsdelivr.net/pyodide/v0.26.4/full/',
-  'https://cdn.jsdelivr.net/npm/pyodide@0.26.4/',
-  'https://unpkg.com/pyodide@0.26.4/',
-  'https://fastly.jsdelivr.net/npm/pyodide@0.26.4/'
-];
+const TIMEOUT = 12000;
 const BOOT_TIMEOUT = 90000;
-let bootTry=0, lastErr='';
 
-function setStatus(kind, extra){
-  const el=$('pystat'); el.className='pystat '+kind;
-  if(kind==='loading'){
-    el.innerHTML = '<span class="spin"></span> جاري تجهيز Python… قد يستغرق ذلك بعض الوقت في أول مرة.' + (extra?'<div style="font-size:13px;font-weight:600;opacity:.75;margin-top:4px">'+extra+'</div>':'');
-  } else if(kind==='ready'){
+
+let lastErr = '';
+let bootTimer = null;
+
+function setStatus(kind, extra) {
+  const el = $('pystat');
+  el.className = 'pystat ' + kind;
+
+  if (kind === 'loading') {
+    el.innerHTML =
+      '<span class="spin"></span> جاري تجهيز Python… قد يستغرق ذلك بعض الوقت في أول مرة.' +
+      (extra
+        ? '<div style="font-size:13px;font-weight:600;opacity:.75;margin-top:4px">' +
+          esc(extra) + '</div>'
+        : '');
+
+  } else if (kind === 'ready') {
     el.innerHTML = '✓ Python جاهزة، اكتب الكود وجرّبه.';
+
   } else {
-    el.innerHTML = 'تعذّر تحميل Python. تأكد من اتصالك بالإنترنت ثم اضغط «إعادة المحاولة».'
-      + ' <button type="button" class="ws-btn" id="pyretry" style="margin-inline-start:8px">إعادة المحاولة</button>'
-      + (lastErr?'<div dir="ltr" style="font-size:12px;font-weight:500;color:var(--text);opacity:.7;margin-top:6px;word-break:break-all">'+esc(lastErr).slice(0,300)+'</div>':'');
-    const b=$('pyretry'); if(b) b.onclick=()=>{bootTry=0; lastErr=''; startWorker();};
+    el.innerHTML =
+      'تعذّر تحميل Python. تأكد من اتصالك بالإنترنت ثم اضغط «إعادة المحاولة».' +
+      '<button type="button" class="ws-btn" id="pyretry" style="margin-inline-start:8px">إعادة المحاولة</button>' +
+      (lastErr
+        ? '<div dir="ltr" style="font-size:12px;font-weight:500;color:var(--text);opacity:.7;margin-top:6px;word-break:break-all">' +
+          esc(lastErr).slice(0, 500) + '</div>'
+        : '');
+
+    const b = $('pyretry');
+    if (b) {
+      b.onclick = () => {
+        lastErr = '';
+        startWorker();
+      };
+    }
   }
-  const dis = kind!=='ready';
-  $('run').disabled=dis; $('check').disabled=dis;
+
+  const dis = kind !== 'ready';
+  $('run').disabled = dis;
+  $('check').disabled = dis;
 }
 
-const HELPER_BOOT = (base) => `importScripts('${base}pyodide.js');`;
-const pyWorkerSrc = (base) => `${HELPER_BOOT(base)}
-let py=null;
-const boot=(async()=>{try{py=await loadPyodide({indexURL:'${base}'});py.runPython(${JSON.stringify(HELPER)});postMessage({type:'ready'});}catch(err){postMessage({type:'fatal',msg:String(err&&err.message||err)});}})();
-onmessage=async e=>{await boot;const d=e.data;if(!py){postMessage({type:'fatal'});return;}
-try{py.globals.set('student_code',d.code);const r=py.runPython('run_and_check(student_code,'+d.step+','+(d.check?'True':'False')+')');postMessage({type:'result',id:d.id,res:JSON.parse(r)});}
-catch(err){postMessage({type:'result',id:d.id,res:{ok:false,checked:!!d.check,out:'',kind:'InternalError',err:String(err),line:null,msg:''}});}};`;
+function clearBootTimer() {
+  if (bootTimer !== null) {
+    clearTimeout(bootTimer);
+    bootTimer = null;
+  }
+}
 
-/* تشغيل بايثون في الصفحة نفسها (بديل لو المتصفح منع الـ Worker) */
-function makeMainThreadEngine(base, onmsg){
-  let py=null, failed=false;
-  const s=document.createElement('script'); s.src=base+'pyodide.js';
-  const boot=new Promise((res,rej)=>{ s.onload=res; s.onerror=()=>rej(new Error('script load failed: '+base)); document.head.appendChild(s); })
-    .then(()=>loadPyodide({indexURL:base}))
-    .then(p=>{py=p; py.runPython(HELPER); onmsg({data:{type:'ready'}});})
-    .catch(err=>{failed=true; onmsg({data:{type:'fatal',msg:String(err&&err.message||err)}});});
+function terminateEngine() {
+  clearBootTimer();
+
+  if (worker) {
+    try {
+      worker.terminate();
+    } catch (e) {}
+    worker = null;
+  }
+}
+
+const pyWorkerSrc = (base) => `
+importScripts('${base}pyodide.js');
+
+let py = null;
+
+const boot = (async () => {
+  try {
+    py = await loadPyodide({
+      indexURL: '${base}'
+    });
+
+    py.runPython(${JSON.stringify(HELPER)});
+
+    postMessage({ type: 'ready' });
+
+  } catch (err) {
+    postMessage({
+      type: 'fatal',
+      msg: String(err && (err.stack || err.message) || err)
+    });
+  }
+})();
+
+onmessage = async (e) => {
+  await boot;
+
+  const d = e.data;
+
+  if (!py) {
+    postMessage({
+      type: 'fatal',
+      msg: 'Pyodide engine is not available'
+    });
+    return;
+  }
+
+  try {
+    py.globals.set('student_code', d.code);
+
+    const r = py.runPython(
+      'run_and_check(student_code,' +
+      d.step + ',' +
+      (d.check ? 'True' : 'False') +
+      ')'
+    );
+
+    postMessage({
+      type: 'result',
+      id: d.id,
+      res: JSON.parse(r)
+    });
+
+  } catch (err) {
+    postMessage({
+      type: 'result',
+      id: d.id,
+      res: {
+        ok: false,
+        checked: !!d.check,
+        out: '',
+        kind: 'InternalError',
+        err: String(err && (err.stack || err.message) || err),
+        line: null,
+        msg: ''
+      }
+    });
+  }
+};
+`;
+
+function makeMainThreadEngine(base, onmsg) {
+  let py = null;
+  let failed = false;
+
+  const s = document.createElement('script');
+  s.src = base + 'pyodide.js';
+
+  const boot = new Promise((resolve, reject) => {
+    s.onload = resolve;
+    s.onerror = () => reject(
+      new Error('Could not load pyodide.js: ' + base)
+    );
+
+    document.head.appendChild(s);
+  })
+  .then(() => loadPyodide({ indexURL: base }))
+  .then(p => {
+    py = p;
+    py.runPython(HELPER);
+    onmsg({ data: { type: 'ready' } });
+  })
+  .catch(err => {
+    failed = true;
+
+    onmsg({
+      data: {
+        type: 'fatal',
+        msg: String(err && (err.stack || err.message) || err)
+      }
+    });
+  });
+
   return {
-    postMessage:async d=>{
-      await boot; if(failed||!py) return;
-      let res;
-      try{ py.globals.set('student_code',d.code); res=JSON.parse(py.runPython('run_and_check(student_code,'+d.step+','+(d.check?'True':'False')+')')); }
-      catch(err){ res={ok:false,checked:!!d.check,out:'',kind:'InternalError',err:String(err),line:null,msg:''}; }
-      onmsg({data:{type:'result',id:d.id,res}});
+    postMessage: async d => {
+      await boot;
+
+      if (failed || !py) return;
+
+      try {
+        py.globals.set('student_code', d.code);
+
+        const r = py.runPython(
+          'run_and_check(student_code,' +
+          d.step + ',' +
+          (d.check ? 'True' : 'False') +
+          ')'
+        );
+
+        onmsg({
+          data: {
+            type: 'result',
+            id: d.id,
+            res: JSON.parse(r)
+          }
+        });
+
+      } catch (err) {
+        onmsg({
+          data: {
+            type: 'result',
+            id: d.id,
+            res: {
+              ok: false,
+              checked: !!d.check,
+              out: '',
+              kind: 'InternalError',
+              err: String(err && (err.stack || err.message) || err),
+              line: null,
+              msg: ''
+            }
+          }
+        });
+      }
     },
-    terminate:()=>{}
+
+    terminate: () => {}
   };
 }
 
-/* الترتيب: كل مصدر بالـ Worker، ولو كلهم فشلوا نجرب أول مصدرين في الصفحة نفسها */
-function attempts(){
-  const list=[]; PY_SOURCES.forEach(b=>list.push({base:b,mode:'worker'}));
-  PY_SOURCES.slice(0,2).forEach(b=>list.push({base:b,mode:'main'}));
-  return list;
-}
-function startWorker(){
-  ready=false;
-  if(worker){try{worker.terminate()}catch(e){} worker=null;}
-  const list=attempts();
-  if(bootTry>=list.length){ setStatus('fail'); return; }
-  const {base,mode}=list[bootTry];
-  const myTry=bootTry;
-  setStatus('loading', bootTry>0 ? ('محاولة '+(bootTry+1)+' من '+list.length+'…') : '');
-  let settled=false;
-  const failThis=(msg)=>{
-    if(settled || myTry!==bootTry) return; settled=true; clearTimeout(bootT);
-    lastErr=(msg||'unknown error')+' ['+mode+' @ '+base.replace(/^https?:\/\//,'').split('/')[0]+']';
-    try{worker&&worker.terminate()}catch(e){} worker=null;
-    bootTry++; startWorker();
-  };
-  const handler=e=>{
-    const d=e.data;
-    if(d.type==='ready'){ if(settled||myTry!==bootTry) return; settled=true; clearTimeout(bootT); ready=true; setStatus('ready'); }
-    else if(d.type==='fatal'){ failThis(d.msg); }
-    else if(d.type==='result'){ const p=pending.get(d.id); if(p){pending.delete(d.id);clearTimeout(p.t);p.resolve(d.res);} }
-  };
-  const bootT=setTimeout(()=>failThis('boot timeout'),BOOT_TIMEOUT);
-  if(mode==='worker'){
-    try{
-      worker=new Worker(URL.createObjectURL(new Blob([pyWorkerSrc(base)],{type:'text/javascript'})));
-    }catch(e){ failThis(String(e)); return; }
-    worker.onmessage=handler;
-    worker.onerror=ev=>{ if(!ready) failThis((ev&&ev.message)||'worker error'); };
-  } else {
-    worker=makeMainThreadEngine(base, handler);
+function startWorker() {
+  ready = false;
+  terminateEngine();
+
+  setStatus('loading', 'جاري تحميل محرك Python…');
+
+  let settled = false;
+  let mode = 'worker';
+  let workerError = '';
+
+  function fail(msg) {
+    if (settled) return;
+
+    settled = true;
+    ready = false;
+    terminateEngine();
+
+    lastErr = String(msg || 'Unknown loading error');
+    setStatus('fail');
+  }
+
+  function onEngineMessage(e) {
+    const d = e.data;
+
+    if (d.type === 'ready') {
+      if (settled) return;
+
+      settled = true;
+      clearBootTimer();
+      ready = true;
+      lastErr = '';
+      setStatus('ready');
+      return;
+    }
+
+    if (d.type === 'fatal') {
+      const msg = d.msg || 'Unknown Pyodide error';
+
+      if (mode === 'worker') {
+        startMainFallback(msg);
+      } else {
+        fail('Worker error: ' + workerError +
+             ' | Main thread error: ' + msg);
+      }
+      return;
+    }
+
+    if (d.type === 'result') {
+      const p = pending.get(d.id);
+
+      if (p) {
+        pending.delete(d.id);
+        clearTimeout(p.t);
+        p.resolve(d.res);
+      }
+    }
+  }
+
+  function startMainFallback(reason) {
+    if (settled) return;
+
+    clearBootTimer();
+
+    if (worker) {
+      try {
+        worker.terminate();
+      } catch (e) {}
+      worker = null;
+    }
+
+    workerError = String(reason || 'Worker failed');
+    mode = 'main';
+
+    setStatus(
+      'loading',
+      'تعذّر تشغيل Worker. نجرب طريقة تشغيل بديلة…'
+    );
+
+    bootTimer = setTimeout(() => {
+      fail(
+        'Main thread boot timeout. Worker error: ' + workerError
+      );
+    }, BOOT_TIMEOUT);
+
+    try {
+      worker = makeMainThreadEngine(PY_BASE, onEngineMessage);
+    } catch (err) {
+      fail(
+        'Worker error: ' + workerError +
+        ' | Main thread error: ' + String(err)
+      );
+    }
+  }
+
+  bootTimer = setTimeout(() => {
+    if (mode === 'worker') {
+      startMainFallback('Worker boot timeout');
+    } else {
+      fail('Main thread boot timeout');
+    }
+  }, BOOT_TIMEOUT);
+
+  try {
+    const blob = new Blob(
+      [pyWorkerSrc(PY_BASE)],
+      { type: 'text/javascript' }
+    );
+
+    const url = URL.createObjectURL(blob);
+
+    worker = new Worker(url);
+    URL.revokeObjectURL(url);
+
+    worker.onmessage = onEngineMessage;
+
+    worker.onerror = ev => {
+      startMainFallback(
+        (ev && ev.message) || 'Worker runtime error'
+      );
+    };
+
+    worker.onmessageerror = () => {
+      startMainFallback('Worker message error');
+    };
+
+  } catch (err) {
+    startMainFallback(
+      'Worker creation failed: ' +
+      String(err && (err.stack || err.message) || err)
+    );
   }
 }
-function execPy(code, step, check){
-  return new Promise(resolve=>{
-    const id=++seq;
-    const t=setTimeout(()=>{pending.delete(id);try{worker.terminate()}catch(e){} bootTry=0; startWorker(); resolve({timeout:true});},TIMEOUT);
-    pending.set(id,{resolve,t});
-    worker.postMessage({id,code,step,check});
+
+function execPy(code, step, check) {
+  return new Promise(resolve => {
+    if (!ready || !worker) {
+      resolve({
+        timeout: true,
+        out: ''
+      });
+      return;
+    }
+
+    const id = ++seq;
+
+    const t = setTimeout(() => {
+      pending.delete(id);
+
+      terminateEngine();
+      ready = false;
+
+      resolve({ timeout: true });
+
+      startWorker();
+    }, TIMEOUT);
+
+    pending.set(id, { resolve, t });
+
+    try {
+      worker.postMessage({
+        id,
+        code,
+        step,
+        check
+      });
+    } catch (err) {
+      clearTimeout(t);
+      pending.delete(id);
+
+      resolve({
+        ok: false,
+        checked: !!check,
+        out: '',
+        kind: 'InternalError',
+        err: String(err),
+        line: null,
+        msg: ''
+      });
+    }
   });
 }
+
 
 /* ---------- واجهة الخطوة ---------- */
 const norm = c => c.replace(/\r/g,'').replace(/[\u201C\u201D\u201E\u201F]/g,'"').replace(/[\u2018\u2019\u201A\u201B]/g,"'").replace(/\u00A0/g,' ').replace(/\u060C/g,',');
