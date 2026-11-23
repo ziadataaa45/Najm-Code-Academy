@@ -138,8 +138,23 @@ print(2 + 3)</textarea>
     runBtn.disabled = true;
     outputEl.textContent = "جاري التشغيل...";
     try {
-      const result = await pyodide.runPythonAsync(codeEl.value);
-      outputEl.textContent = result === undefined ? "تم التنفيذ. (لا توجد قيمة إرجاع)" : String(result);
+      const result = await pyodide.runPythonAsync(`
+      import io
+      import sys
+
+      _output = io.StringIO()
+      _old_stdout = sys.stdout
+      sys.stdout = _output
+
+      try:
+          exec(${JSON.stringify(codeEl.value)})
+      finally:
+          sys.stdout = _old_stdout
+
+      _output.getvalue()
+      `);
+      
+      outputEl.textContent = result || "تم التنفيذ دون طباعة ناتج.";
       detailsEl.textContent = "تم تنفيذ الكود دون أخطاء.";
     } catch (error) {
       outputEl.textContent = "حدث خطأ في كود Python.";
