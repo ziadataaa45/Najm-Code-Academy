@@ -5,19 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Najm Code Academy</title>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
-<style id="syntax-colors">
-/* ============================================================
-   🎨 ألوان تلوين الكود في المترجم — عدّلها من هنا
-   ============================================================ */
-:root{
-  --tk-kw:#ff79c6;    /* كلمات محجوزة: if else for True ... */
-  --tk-var:#9ec5ff;   /* المتغيرات */
-  --tk-str:#ffd166;   /* النصوص */
-  --tk-num:#4cd7e8;   /* الأرقام */
-  --tk-fn:#7ee787;    /* الدوال: print() len() ... */
-  --tk-cm:#8394c4;    /* التعليقات */
-}
-</style>
+
 <style>
 :root{--bg:#f4f7fd;--card:#fbfdff;--ink:#1b2250;--text:#26305e;--line:#dbe5f6;--purple:#5b3fd0;--blue:#2f5be0;--yellow:#fdeaa6;--dark:#17203a;
   --green:#16a05a;--sky:#2b7bf0;--pink:#ee3f86;--orange:#f5a01a;--violet:#7a5ae0}
@@ -195,6 +183,7 @@ svg.art{direction:ltr}
 .lg-t{font-size:16px;font-weight:700;color:var(--ink)}
 @media(max-width:820px){.hl-layer,.code-in.cmp{font-size:16px}}
 </style>
+<link rel="stylesheet" href="najm-colors.css">
 </head>
 <body>
 <div class="page">
@@ -242,7 +231,7 @@ svg.art{direction:ltr}
   </div>
   <div class="term"><div class="tl">Terminal</div><pre id="term"></pre></div>
   <div class="fb" id="fb" role="status" aria-live="polite"></div>
-  <p class="cmp-note">اضغط Ctrl + Enter للتشغيل بسرعة. وفي المحرر، زر Tab يضيف مسافات (اضغط Esc ثم Tab لتنتقل خارج المحرر). والدالة <bdi>input()</bdi> غير مدعومة هنا.</p>
+  <p class="cmp-note">اضغط Ctrl + Enter للتشغيل بسرعة . زر Tab يضيف مسافات.</p>
 </section>
 
 <div class="ws-home"><a class="ws-btn ghost" href="index.html">العودة للصفحة الرئيسية</a></div>
@@ -267,7 +256,8 @@ const EXAMPLES = [
   { title: "f-string", code: "name = 'John'\nage = 26\nprint(f'My name is {name} and I am {age} years old')" },
   { title: "تقطيع النصوص", code: "my_str = 'Hello world'\nprint(my_str[1:4])\nprint(my_str[::-1])" },
   { title: "دوال النصوص", code: "text = '  hello world  '\nprint(text.strip().title())\nprint(text.count('o'))" },
-  { title: "الأعداد", code: "print(56 / 12)\nprint(17 // 5, 17 % 5)\nprint(round(4.253, 1))" }
+  { title: "الأعداد", code: "print(56 / 12)\nprint(17 // 5, 17 % 5)\nprint(round(4.253, 1))" },
+  { title: "input()", code: "name = input('What is your name? ')\nprint('Hello,', name)" }
 ];
 const TITLE = "المترجم التفاعلي";
 const SUBTITLE = "اكتب كود Python وشغّله مباشرة في";
@@ -275,7 +265,63 @@ const HIGHLIGHT = "المتصفح";
 const INTRO = "اكتب أي كود Python ثم اضغط «تشغيل» لترى الناتج. جرّب ما تعلمته في الدروس والورش، أو ابدأ بأحد الأمثلة الجاهزة.";
 /* ================== نهاية منطقة التعديل ================== */
 
-const HELPER = "import ast, io, sys, json, builtins, contextlib, traceback\n\n\ndef _no_input(*args, **kwargs):\n    raise RuntimeError(\"الدالة input() غير مدعومة في هذا المترجم. اكتب القيم داخل الكود مباشرة.\")\n\n\nbuiltins.input = _no_input\n\n\ndef run_code(code):\n    res = {'out': '', 'trace': '', 'kind': '', 'line': None}\n    buf = io.StringIO()\n    g = {'__name__': '__main__'}\n    lines = code.split('\\n')\n    try:\n        compiled = compile(code, '<main.py>', 'exec')\n        with contextlib.redirect_stdout(buf), contextlib.redirect_stderr(buf):\n            exec(compiled, g)\n    except SyntaxError as e:\n        res['kind'] = type(e).__name__\n        res['line'] = e.lineno\n        src = (e.text or '').strip()\n        t = '  File \"main.py\", line %s\\n' % e.lineno\n        if src:\n            t += '    %s\\n' % src\n        t += '%s: %s' % (type(e).__name__, e.msg)\n        res['trace'] = t\n    except BaseException as e:\n        res['kind'] = type(e).__name__\n        frames = [f for f in traceback.extract_tb(e.__traceback__) if f.filename == '<main.py>']\n        t = 'Traceback (most recent call last):\\n'\n        for f in frames:\n            t += '  File \"main.py\", line %s, in %s\\n' % (f.lineno, f.name)\n            if 1 <= f.lineno <= len(lines):\n                t += '    %s\\n' % lines[f.lineno - 1].strip()\n            res['line'] = f.lineno\n        t += '%s: %s' % (type(e).__name__, e)\n        res['trace'] = t\n    res['out'] = buf.getvalue()\n    return json.dumps(res)\n";
+const HELPER = String.raw`import ast, io, json, builtins, contextlib, traceback
+
+
+class NeedInput(BaseException):
+    pass
+
+
+def run_code(code, inputs_json='[]'):
+    inputs = json.loads(inputs_json)
+    pos = [0]
+    res = {'out': '', 'trace': '', 'kind': '', 'line': None, 'need_input': False}
+    buf = io.StringIO()
+    g = {'__name__': '__main__'}
+    lines = code.split('\n')
+
+    def fake_input(prompt=''):
+        print(str(prompt), end='')
+        if pos[0] < len(inputs):
+            v = inputs[pos[0]]
+            pos[0] += 1
+            print(v)
+            return v
+        raise NeedInput()
+
+    old = builtins.input
+    builtins.input = fake_input
+    try:
+        compiled = compile(code, '<main.py>', 'exec')
+        with contextlib.redirect_stdout(buf), contextlib.redirect_stderr(buf):
+            exec(compiled, g)
+    except NeedInput:
+        res['need_input'] = True
+    except SyntaxError as e:
+        res['kind'] = type(e).__name__
+        res['line'] = e.lineno
+        src = (e.text or '').strip()
+        t = '  File "main.py", line %s\n' % e.lineno
+        if src:
+            t += '    %s\n' % src
+        t += '%s: %s' % (type(e).__name__, e.msg)
+        res['trace'] = t
+    except BaseException as e:
+        res['kind'] = type(e).__name__
+        frames = [f for f in traceback.extract_tb(e.__traceback__) if f.filename == '<main.py>']
+        t = 'Traceback (most recent call last):\n'
+        for f in frames:
+            t += '  File "main.py", line %s, in %s\n' % (f.lineno, f.name)
+            if 1 <= f.lineno <= len(lines):
+                t += '    %s\n' % lines[f.lineno - 1].strip()
+            res['line'] = f.lineno
+        t += '%s: %s' % (type(e).__name__, e)
+        res['trace'] = t
+    finally:
+        builtins.input = old
+    res['out'] = buf.getvalue()
+    return json.dumps(res)
+`;
 const PY_BASE = 'https://cdn.jsdelivr.net/pyodide/v0.26.4/full/';
 const KEY = 'najm-compiler-code-v1';
 const $ = id => document.getElementById(id);
@@ -339,46 +385,176 @@ ed.addEventListener('keydown', e=>{
 $('examples').innerHTML = EXAMPLES.map((x,i)=>`<button type="button" class="ex-chip" data-i="${i}">${esc(x.title)}</button>`).join('');
 $('examples').querySelectorAll('.ex-chip').forEach(b=>b.onclick=()=>{
   if(ed.value.trim() && !confirm('هل تريد استبدال الكود الحالي بهذا المثال؟')) return;
+  if(inputCancel) inputCancel();
   ed.value = EXAMPLES[+b.dataset.i].code; saveCode(); ed.focus();
   $('term').textContent=''; $('term').className=''; $('fb').className='fb'; $('fb').textContent='';
 });
 
-/* ---------- محرك بايثون (Pyodide) داخل Web Worker ---------- */
+/* ---------- محرك بايثون (Pyodide): Worker، وإن فشل نشغّله في الصفحة نفسها ---------- */
+const TIMEOUT = 12000;
+const BOOT_TIMEOUT = 90000;
+let worker = null, ready = false, seq = 0, lastErr = '', bootTimer = null;
+const pending = new Map();
+
 const workerSrc = `importScripts('${PY_BASE}pyodide.js');
 let py=null;
-const boot=(async()=>{try{py=await loadPyodide({indexURL:'${PY_BASE}'});py.runPython(${JSON.stringify(HELPER)});postMessage({type:'ready'});}catch(err){postMessage({type:'fatal',msg:String(err)});}})();
-onmessage=async e=>{await boot;const d=e.data;if(!py){postMessage({type:'fatal'});return;}
-try{py.globals.set('student_code',d.code);const r=py.runPython('run_code(student_code)');postMessage({type:'result',id:d.id,res:JSON.parse(r)});}
+const boot=(async()=>{try{py=await loadPyodide({indexURL:'${PY_BASE}'});py.runPython(${JSON.stringify(HELPER)});postMessage({type:'ready'});}catch(err){postMessage({type:'fatal',msg:String(err&&(err.stack||err.message)||err)});}})();
+onmessage=async e=>{await boot;const d=e.data;if(!py){postMessage({type:'fatal',msg:'Pyodide engine is not available'});return;}
+try{py.globals.set('student_code',d.code);py.globals.set('student_inputs',JSON.stringify(d.inputs||[]));const r=py.runPython('run_code(student_code, student_inputs)');postMessage({type:'result',id:d.id,res:JSON.parse(r)});}
 catch(err){postMessage({type:'result',id:d.id,res:{out:'',trace:String(err),kind:'InternalError',line:null}});}};`;
-let worker=null, ready=false, seq=0; const pending=new Map();
-const TIMEOUT=12000;
-function setStatus(kind){
+
+function makeMainThreadEngine(onmsg){
+  let py=null, failed=false;
+  const s=document.createElement('script'); s.src=PY_BASE+'pyodide.js';
+  const boot=new Promise((resolve,reject)=>{
+    s.onload=resolve; s.onerror=()=>reject(new Error('Could not load pyodide.js'));
+    document.head.appendChild(s);
+  }).then(()=>loadPyodide({indexURL:PY_BASE})).then(p=>{
+    py=p; py.runPython(HELPER); onmsg({data:{type:'ready'}});
+  }).catch(err=>{
+    failed=true; onmsg({data:{type:'fatal',msg:String(err&&(err.stack||err.message)||err)}});
+  });
+  return {
+    postMessage: async d=>{
+      await boot; if(failed||!py) return;
+      try{
+        py.globals.set('student_code',d.code);
+        py.globals.set('student_inputs',JSON.stringify(d.inputs||[]));
+        const r=py.runPython('run_code(student_code, student_inputs)');
+        onmsg({data:{type:'result',id:d.id,res:JSON.parse(r)}});
+      }catch(err){
+        onmsg({data:{type:'result',id:d.id,res:{out:'',trace:String(err),kind:'InternalError',line:null}}});
+      }
+    },
+    terminate:()=>{}
+  };
+}
+
+function setStatus(kind, extra){
   const el=$('pystat'); el.className='pystat '+kind;
-  el.innerHTML = kind==='loading' ? '<span class="spin"></span> جاري تجهيز Python… قد يستغرق ذلك بعض الوقت في أول مرة.'
-    : kind==='ready' ? '✓ Python جاهزة، اكتب الكود واضغط «تشغيل».'
-    : 'تعذّر تحميل Python. تأكد من اتصالك بالإنترنت ثم أعد تحميل الصفحة.';
+  if(kind==='loading'){
+    el.innerHTML='<span class="spin"></span> جاري تجهيز Python… قد يستغرق ذلك بعض الوقت في أول مرة.'+
+      (extra?'<div style="font-size:13px;font-weight:600;opacity:.75;margin-top:4px">'+esc(extra)+'</div>':'');
+  } else if(kind==='ready'){
+    el.innerHTML='✓ Python جاهزة، اكتب الكود واضغط «تشغيل».';
+  } else {
+    el.innerHTML='تعذّر تحميل Python. تأكد من اتصالك بالإنترنت ثم اضغط «إعادة المحاولة».'+
+      '<button type="button" class="ws-btn" id="pyretry" style="margin-inline-start:8px">إعادة المحاولة</button>'+
+      (lastErr?'<div dir="ltr" style="font-size:12px;font-weight:500;opacity:.7;margin-top:6px;word-break:break-all">'+esc(lastErr).slice(0,500)+'</div>':'');
+    const b=$('pyretry'); if(b) b.onclick=()=>{ lastErr=''; startWorker(); };
+  }
   $('run').disabled = kind!=='ready';
 }
-function startWorker(){
-  ready=false; setStatus('loading');
-  try{ worker=new Worker(URL.createObjectURL(new Blob([workerSrc],{type:'text/javascript'}))); }catch(e){ setStatus('fail'); return; }
-  worker.onmessage=e=>{
-    const d=e.data;
-    if(d.type==='ready'){ready=true;setStatus('ready');}
-    else if(d.type==='fatal'){setStatus('fail');}
-    else if(d.type==='result'){const p=pending.get(d.id); if(p){pending.delete(d.id);clearTimeout(p.t);p.resolve(d.res);}}
-  };
-  worker.onerror=()=>{ if(!ready) setStatus('fail'); };
+
+function clearBootTimer(){ if(bootTimer!==null){ clearTimeout(bootTimer); bootTimer=null; } }
+function terminateEngine(){
+  clearBootTimer();
+  if(worker){ try{ worker.terminate(); }catch(e){} worker=null; }
 }
-function execPy(code){
+
+function startWorker(){
+  ready=false; terminateEngine();
+  setStatus('loading','جاري تحميل محرك Python…');
+  let settled=false, mode='worker', workerError='';
+
+  function fail(msg){
+    if(settled) return;
+    settled=true; ready=false; terminateEngine();
+    lastErr=String(msg||'Unknown loading error'); setStatus('fail');
+  }
+  function onEngineMessage(e){
+    const d=e.data;
+    if(d.type==='ready'){
+      if(settled) return;
+      settled=true; clearBootTimer(); ready=true; lastErr=''; setStatus('ready'); return;
+    }
+    if(d.type==='fatal'){
+      const msg=d.msg||'Unknown Pyodide error';
+      if(mode==='worker') startMainFallback(msg);
+      else fail('Worker error: '+workerError+' | Main thread error: '+msg);
+      return;
+    }
+    if(d.type==='result'){
+      const p=pending.get(d.id);
+      if(p){ pending.delete(d.id); clearTimeout(p.t); p.resolve(d.res); }
+    }
+  }
+  function startMainFallback(reason){
+    if(settled) return;
+    clearBootTimer();
+    if(worker){ try{ worker.terminate(); }catch(e){} worker=null; }
+    workerError=String(reason||'Worker failed'); mode='main';
+    setStatus('loading','تعذّر تشغيل Worker. نجرب طريقة تشغيل بديلة…');
+    bootTimer=setTimeout(()=>fail('Main thread boot timeout. Worker error: '+workerError), BOOT_TIMEOUT);
+    try{ worker=makeMainThreadEngine(onEngineMessage); }
+    catch(err){ fail('Worker error: '+workerError+' | Main thread error: '+String(err)); }
+  }
+
+  bootTimer=setTimeout(()=>{
+    if(mode==='worker') startMainFallback('Worker boot timeout');
+    else fail('Main thread boot timeout');
+  }, BOOT_TIMEOUT);
+
+  try{
+    const url=URL.createObjectURL(new Blob([workerSrc],{type:'text/javascript'}));
+    worker=new Worker(url); URL.revokeObjectURL(url);
+    worker.onmessage=onEngineMessage;
+    worker.onerror=ev=>startMainFallback((ev&&ev.message)||'Worker runtime error');
+    worker.onmessageerror=()=>startMainFallback('Worker message error');
+  }catch(err){
+    startMainFallback('Worker creation failed: '+String(err&&(err.stack||err.message)||err));
+  }
+}
+
+function execPy(code, inputs){
   return new Promise(resolve=>{
+    if(!ready||!worker){ resolve({timeout:true,out:''}); return; }
     const id=++seq;
-    const t=setTimeout(()=>{pending.delete(id);try{worker.terminate()}catch(e){} startWorker(); resolve({timeout:true});},TIMEOUT);
+    const t=setTimeout(()=>{
+      pending.delete(id); terminateEngine(); ready=false;
+      resolve({timeout:true}); startWorker();
+    }, TIMEOUT);
     pending.set(id,{resolve,t});
-    worker.postMessage({id,code});
+    try{ worker.postMessage({id,code,inputs:inputs||[]}); }
+    catch(err){
+      clearTimeout(t); pending.delete(id);
+      resolve({out:'',trace:String(err),kind:'InternalError',line:null});
+    }
   });
 }
 
+/* ---------- إدخال input() داخل الـ Terminal ---------- */
+(()=>{const s=document.createElement('style');
+s.textContent=`#term .term-in{background:transparent;border:0;outline:0;padding:0;margin:0;font:inherit;color:inherit;caret-color:currentColor;min-width:1ch;width:1ch;direction:ltr}
+#term{cursor:text}`;
+document.head.appendChild(s);
+$('term').addEventListener('click',()=>{const i=$('term').querySelector('.term-in'); if(i) i.focus();});})();
+
+let inputCancel=null;
+function waitInput(){
+  return new Promise(resolve=>{
+    const term=$('term');
+    const inp=document.createElement('input');
+    inp.type='text'; inp.className='term-in'; inp.dir='ltr';
+    inp.autocomplete='off'; inp.spellcheck=false;
+    inp.setAttribute('aria-label','إدخال');
+    inp.addEventListener('input',()=>{inp.style.width=Math.max(1,inp.value.length+1)+'ch';});
+    inp.addEventListener('keydown',e=>{
+      if(e.key==='Enter'){
+        e.preventDefault();
+        inputCancel=null;
+        inp.disabled=true;
+        resolve(inp.value);
+      }
+    });
+    inputCancel=()=>{inputCancel=null; resolve(null);};
+    term.appendChild(inp);
+    inp.focus();
+    inp.scrollIntoView({block:'nearest'});
+  });
+}
+
+/* ---------- التشغيل ---------- */
 const norm = c => c.replace(/\r/g,'').replace(/[\u201C\u201D\u201E\u201F]/g,'"').replace(/[\u2018\u2019\u201A\u201B]/g,"'").replace(/\u00A0/g,' ').replace(/\u060C/g,',');
 const ERR_AR = {
   IndentationError: 'هناك مسافات زائدة أو ناقصة في بداية سطر. تأكد من محاذاة الأسطر.',
@@ -396,9 +572,21 @@ const ERR_AR = {
 async function run(){
   if(!ready) return;
   const fb=$('fb'), term=$('term');
+  const code=norm(ed.value);
   $('run').disabled=true; term.className=''; term.textContent='… جاري التشغيل'; fb.className='fb'; fb.textContent='';
-  const r=await execPy(norm(ed.value));
+
+  const inputs=[];
+  let r;
+  while(true){
+    r=await execPy(code, inputs);
+    if(!r.need_input) break;
+    term.className=''; term.textContent=r.out||'';
+    const v=await waitInput();
+    if(v===null){ if(ready) $('run').disabled=false; return; }
+    inputs.push(v);
+  }
   if(ready) $('run').disabled=false;
+
   if(r.timeout){ term.textContent=''; fb.className='fb no'; fb.textContent='استغرق الكود وقتًا طويلًا فتم إيقافه. راجع الكود، فقد يكون فيه تكرار لا ينتهي.'; return; }
   let out=r.out||'';
   if(r.kind){
@@ -409,8 +597,8 @@ async function run(){
   term.textContent = out || '(لا يوجد ناتج مطبوع)';
 }
 $('run').onclick=run;
-$('clearOut').onclick=()=>{ $('term').textContent=''; $('term').className=''; $('fb').className='fb'; $('fb').textContent=''; };
-$('clearCode').onclick=()=>{ if(!ed.value.trim() || confirm('هل تريد مسح الكود؟')){ ed.value=''; saveCode(); ed.focus(); } };
+$('clearOut').onclick=()=>{ if(inputCancel) inputCancel(); $('term').textContent=''; $('term').className=''; $('fb').className='fb'; $('fb').textContent=''; };
+$('clearCode').onclick=()=>{ if(!ed.value.trim() || confirm('هل تريد مسح الكود؟')){ if(inputCancel) inputCancel(); ed.value=''; saveCode(); ed.focus(); } };
 startWorker();
 
 </script>
