@@ -1,0 +1,13 @@
+:root{
+  --tk-cm:#6b7280;
+  --tk-str:#16a34a;
+  --tk-num:#d97706;
+  --tk-kw:#9333ea;
+  --tk-fn:#2563eb;
+}
+
+.tk-cm{color:var(--tk-cm);font-style:italic}
+.tk-str{color:var(--tk-str)}
+.tk-num{color:var(--tk-num)}
+.tk-kw{color:var(--tk-kw);font-weight:700}
+.tk-fn{color:var(--tk-fn)}
